@@ -63,6 +63,5 @@ export const CONFIG = {
     ENV === 'development'
       ? 'http://127.0.0.1:5566'
       : 'https://admin.wittyna.com',
-  jwtPublicKey: fs.readFileSync(require.resolve('./pem/public.pem')),
   uiRoot: dirname(new URL(import.meta.url).pathname) + '/ui',
 };
