@@ -1,0 +1,17 @@
+{
+  "name": "wittyna-admin",
+  "type": "module",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "sh ./build.sh",
+    "dev": "concurrently \"cd ./ui && npm run dev\"  \"cd ./node && npm run dev\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  }
+}
