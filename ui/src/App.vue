@@ -1,14 +1,16 @@
 <script setup lang="ts">
-fetch('/admin/userInfo').then(async (data)=> {
-  let json = await data.json()
-  if(data.status === 200){
-    alert(JSON.stringify(json))
-  } else if(data.status === 401) {
-    location.href = json.redirect_uri
+fetch('/admin/userInfo').then(async (data) => {
+  let json = await data.json();
+  if (data.status === 200) {
+    alert(JSON.stringify(json));
+  } else if (data.status === 401) {
+    location.href = json.redirect_uri;
   }
-})
+});
 function aaa() {
-  location.href = `/admin/logout?redirect_uri=${encodeURIComponent(location.href+'?a=1')}&state=123`
+  location.href = `/admin/logout?redirect_uri=${encodeURIComponent(
+    location.href + '?a=1'
+  )}&state=123`;
 }
 </script>
 
