@@ -6,3 +6,4 @@ const api = createDiscreteApi(['message'], {
   },
 });
 export const message = api.message;
+export * from './auth';

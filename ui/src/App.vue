@@ -1,31 +1,20 @@
-<script setup lang="ts">
-fetch('/admin/userInfo').then(async (data) => {
-  let json = await data.json();
-  if (data.status === 200) {
-    alert(JSON.stringify(json));
-  } else if (data.status === 401) {
-    location.href = json.redirect_uri;
-  }
-});
-function aaa() {
-  location.href = `/admin/logout?redirect_uri=${encodeURIComponent(
-    location.href + '?a=1'
-  )}&state=123`;
-}
-</script>
+<script setup></script>
 
 <template>
-  <h1>hello</h1>
-  <button @click="aaa">登出</button>
+  <NLayout class="root">
+    <NLayoutHeader bordered style="height: 50px">
+      <IHeader></IHeader>
+    </NLayoutHeader>
+    <NLayout hasSider style="height: calc(100% - 50px)">
+      <NLayoutSider bordered>
+        <IMenu> </IMenu>
+      </NLayoutSider>
+      <NLayoutContent> <RouterView /> </NLayoutContent>
+    </NLayout>
+  </NLayout>
 </template>
-<style scoped>
+<style scoped lang="scss">
 .root {
-  background: rgb(100, 101, 106);
-  color: white;
   height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 </style>

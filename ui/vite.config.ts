@@ -6,10 +6,13 @@ import { NaiveUiResolver } from 'unplugin-vue-components/dist/resolvers';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Components from 'unplugin-vue-components/dist/vite';
+import vueJsx from '@vitejs/plugin-vue-jsx';
+
 export default defineConfig({
   base: './',
   plugins: [
     vue(),
+    vueJsx(),
     Components({
       resolvers: [NaiveUiResolver()],
     }),

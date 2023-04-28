@@ -6,6 +6,7 @@ import process from 'node:process';
 const ENV = process.env.ENV;
 export const CONFIG = {
   systemClient: {
+    id: 'admin',
     desc: 'admin',
     client_id: 'admin',
     client_secret: '42ea9BE#',
@@ -19,6 +20,7 @@ export const CONFIG = {
   },
   normalClients: [
     {
+      id: 'tool-of-nana',
       desc: 'tool-of-nana',
       client_id: 'tool-of-nana',
       client_secret: '42ea9BE#',
