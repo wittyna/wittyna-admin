@@ -6,14 +6,18 @@
     &nbsp;&nbsp;&nbsp;
     <div class="title">ADMIN</div>
     <div style="flex: 1"></div>
+    <NIcon size="18">
+      <PersonOutline></PersonOutline>
+    </NIcon>
+    &nbsp;&nbsp;
     {{ userinfo.username }}
     &nbsp;&nbsp;
-    <NButton text size="small" type="primary" @click="logout"> 注销 </NButton>
+    <NButton text size="small" type="primary" @click="logout"> logout </NButton>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { PrismOutline } from '@vicons/ionicons5';
+import { PrismOutline, PersonOutline } from '@vicons/ionicons5';
 import { userinfo } from '../../main';
 function logout() {
   location.href = `/admin/logout?redirect_uri=${encodeURIComponent(

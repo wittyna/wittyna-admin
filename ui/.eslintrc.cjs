@@ -7,8 +7,9 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:vue/vue3-essential',
+    'plugin:vue/vue3-strongly-recommended',
+    "plugin:vue/vue3-recommended",
     'plugin:@typescript-eslint/recommended',
-    'plugin:jsx-a11y/recommended',
     'prettier',
   ],
   overrides: [],
@@ -16,7 +17,9 @@ module.exports = {
   parserOptions: {
     parser: '@typescript-eslint/parser',
     ecmaVersion: 'latest',
-    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true
+    },
   },
   plugins: ['vue', '@typescript-eslint', 'prettier'],
   rules: {
@@ -35,6 +38,5 @@ module.exports = {
     'vue/no-duplicate-attr-inheritance': 'error',
     // @click="funcA" 不需要写括号，除非有参数
     'vue/v-on-function-call': 'error',
-
   },
 };

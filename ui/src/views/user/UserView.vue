@@ -2,6 +2,6 @@
   <h1>user</h1>
 </template>
 
-<script setup></script>
+<script setup lang="ts"></script>
 
 <style scoped></style>

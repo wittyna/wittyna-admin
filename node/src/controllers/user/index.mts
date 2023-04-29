@@ -50,15 +50,20 @@ export class UserController {
     });
   }
   @Get()
-  async getList(
-    @Query('currentPage') currentPage = 1,
-    @Query('pageSize') pageSize = 10
-  ) {
-    return prismaClient.user.findMany({
-      skip: (currentPage - 1) * pageSize,
+  async getList(@Query('page') page = 1, @Query('pageSize') pageSize = 10) {
+    page = Number(page);
+    pageSize = Number(pageSize);
+    const rows = await prismaClient.user.findMany({
+      skip: (page - 1) * pageSize,
       take: pageSize,
       select: this.select,
     });
+    const total = await prismaClient.user.count();
+    return {
+      total,
+      pageCount: Math.ceil(total / pageSize),
+      rows,
+    };
   }
   @Delete(':id')
   async delete(@Param('id') @Required() id: string) {

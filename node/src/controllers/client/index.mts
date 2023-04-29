@@ -19,6 +19,8 @@ export class ClientController {
     desc: true,
     client_id: true,
     type: true,
+    updated_at: true,
+    created_at: true,
   };
   @Post()
   async create(
@@ -58,14 +60,48 @@ export class ClientController {
   }
   @Get()
   async getList(
-    @Query('currenPage') currentPage = 1,
-    @Query('pageSize') pageSize = 10
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+    @Query('search') search = ''
   ) {
-    return prismaClient.client.findMany({
-      skip: (currentPage - 1) * pageSize,
+    page = Number(page);
+    pageSize = Number(pageSize);
+    const rows = await prismaClient.client.findMany({
+      skip: (page - 1) * pageSize,
       take: pageSize,
       select: this.select,
+      where: search
+        ? {
+            OR: [
+              {
+                desc: {
+                  contains: search,
+                },
+              },
+              {
+                client_id: {
+                  contains: search,
+                },
+              },
+              ...(Object.values(ClientType).includes(search as ClientType)
+                ? [
+                    {
+                      type: {
+                        equals: search as ClientType,
+                      },
+                    },
+                  ]
+                : []),
+            ],
+          }
+        : undefined,
     });
+    const total = await prismaClient.client.count();
+    return {
+      total,
+      pageCount: Math.ceil(total / pageSize),
+      rows,
+    };
   }
   @Delete(':id')
   async delete(@Param('id') @Required() id: string) {
@@ -73,7 +109,6 @@ export class ClientController {
       where: {
         id: id,
       },
-      select: this.select,
     });
   }
   @Post(':id/users')

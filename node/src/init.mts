@@ -48,12 +48,12 @@ export async function init() {
         create: {
           ...normalClient,
           client_secret: normalClient.client_secret,
-          type: ClientType.SYSTEM,
+          type: ClientType.NORMAL,
         },
         update: {
           ...normalClient,
           client_secret: normalClient.client_secret,
-          type: ClientType.SYSTEM,
+          type: ClientType.NORMAL,
         },
       });
     }),
