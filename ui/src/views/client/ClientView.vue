@@ -14,6 +14,8 @@
           </template>
         </NInput>
       </NCol>
+      <div style="flex: 1"></div>
+      <NButton @click="createClientViewRef?.open"> create </NButton>
     </NRow>
     <NDataTable
       ref="tableRef"
@@ -26,6 +28,10 @@
       :loading="loading"
       :maxHeight="250"
     />
+    <CreateClientView
+      ref="createClientViewRef"
+      @success="refresh(true)"
+    ></CreateClientView>
   </div>
 </template>
 
@@ -35,10 +41,15 @@ import { useColumns } from './columns';
 import { ref, watchEffect, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getClientList } from './service';
+import CreateClientView from './CreateClientView.vue';
+
+const tableRef = ref<DataTableInst>();
+const createClientViewRef = ref();
+
 const search = ref('');
 const searchConfirm = ref('');
 const loading = ref(true);
-const tableRef = ref<DataTableInst>();
+
 const page = ref(1);
 const pageSize = ref(10);
 const data = ref([]);

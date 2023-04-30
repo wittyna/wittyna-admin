@@ -18,6 +18,7 @@ request.interceptors.response.use(
     } else {
       message.error('unknownError');
     }
+    return Promise.reject(error);
   }
 );
 

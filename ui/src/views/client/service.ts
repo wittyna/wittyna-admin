@@ -19,5 +19,8 @@ export const getClientList = ({
     },
   });
 
-export const deleteClient = (id: string): Promise<void> =>
+export const deleteClient = (id: string): Promise<Client> =>
   request.delete(`/admin/client/${encodeURIComponent(id)}`);
+
+export const createClient = (client: Client): Promise<Client> =>
+  request.post(`/admin/client`, client);

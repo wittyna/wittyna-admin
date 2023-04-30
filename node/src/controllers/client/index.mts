@@ -8,6 +8,8 @@ import {
   Query,
   Required,
   Delete,
+  ResponseError,
+  Session,
 } from 'wittyna';
 import { prismaClient } from '../../index.mjs';
 import { Client, ClientType } from '@prisma/client';
@@ -28,10 +30,18 @@ export class ClientController {
     @Required()
     @Required('client_secret')
     @Required('redirect_uris')
-    client: Client
+    client: Client,
+    @Session() session: any
   ) {
-    // 只能组册普通客户端
-    client.type = ClientType.OFFICIAL;
+    console.log(session.userId, 11111);
+    if (
+      client.type !== ClientType.OFFICIAL &&
+      client.type !== ClientType.THREE_PART
+    ) {
+      throw new ResponseError({
+        error: 'invalid client type',
+      });
+    }
     return prismaClient.client.create({
       data: client,
       select: this.select,
