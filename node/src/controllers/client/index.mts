@@ -31,7 +31,7 @@ export class ClientController {
     client: Client
   ) {
     // 只能组册普通客户端
-    client.type = ClientType.NORMAL;
+    client.type = ClientType.OFFICIAL;
     return prismaClient.client.create({
       data: client,
       select: this.select,
@@ -40,7 +40,7 @@ export class ClientController {
   @Put()
   async update(@Body() @Required() @Required('id') client: Client) {
     // 只能组册普通客户端
-    client.type = ClientType.NORMAL;
+    client.type = ClientType.OFFICIAL;
     return prismaClient.client.update({
       where: {
         id: client.id,

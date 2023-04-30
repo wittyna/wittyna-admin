@@ -56,15 +56,18 @@ function rowKey(rowData) {
 }
 async function query() {
   loading.value = true;
-  const { rows, total, pageCount } = await getClientList({
-    page: page.value,
-    pageSize: pageSize.value,
-    search: searchConfirm.value,
-  });
-  data.value = rows;
-  pagination.pageCount = pageCount;
-  pagination.itemCount = total;
-  loading.value = false;
+  try {
+    const { rows, total, pageCount } = await getClientList({
+      page: page.value,
+      pageSize: pageSize.value,
+      search: searchConfirm.value,
+    });
+    data.value = rows;
+    pagination.pageCount = pageCount;
+    pagination.itemCount = total;
+  } finally {
+    loading.value = false;
+  }
 }
 function refresh(flag: boolean) {
   if (flag) {

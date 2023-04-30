@@ -1,5 +1,5 @@
 import { DataTableColumns } from 'naive-ui';
-import { Client } from './type';
+import { ClientView } from './type';
 import { formatDate } from '../../util/date';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
 import { ClientType } from '@prisma/client';
@@ -7,13 +7,18 @@ import { deleteClient } from './service';
 
 export const useColumns: (
   refresh: (flag: boolean) => void
-) => DataTableColumns<Client> = (refresh) => {
+) => DataTableColumns<ClientView> = (refresh) => {
   async function onDeleteHandler(id: string) {
     await deleteClient(id);
     refresh(false);
   }
 
   return [
+    {
+      title: 'client_id',
+      key: 'client_id',
+      width: 200,
+    },
     {
       title: 'desc',
       key: 'desc',
@@ -24,21 +29,6 @@ export const useColumns: (
       key: 'type',
       width: 200,
     },
-    {
-      title: 'client_id',
-      key: 'client_id',
-      width: 200,
-    },
-    // {
-    //   title: 'client_secret',
-    //   key: 'client_secret',
-    //   width: 200,
-    // },
-    // {
-    //   title: 'redirect_uris',
-    //   key: 'redirect_uris',
-    //   width: 200,
-    // },
     {
       title: 'created_at',
       key: 'created_at',
@@ -65,7 +55,7 @@ export const useColumns: (
               edit
             </NButton>
             <NPopconfirm
-              onPositiveClick={() => onDeleteHandler(row.id)}
+              onPositiveClick={() => onDeleteHandler(row.id!)}
               v-slots={{
                 trigger: () => (
                   <NButton
