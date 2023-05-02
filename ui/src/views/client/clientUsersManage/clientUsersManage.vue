@@ -4,7 +4,7 @@
       <NCol :span="6">
         <NInput
           v-model:value="search"
-          placeholder="search by username, email, phone"
+          placeholder="search by username, email"
           @keyup.enter="doSearch"
         >
           <template #suffix>
@@ -37,10 +37,10 @@
 
 <script lang="ts" setup>
 import { SearchOutline } from '@vicons/ionicons5';
-import { useColumns } from './columns';
+import { useColumns } from '../columns';
 import { ref, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
-import { getUserList } from './service';
+import { getClientUsers } from '../service';
 import CreateUserView from './CreateUserView.vue';
 
 const tableRef = ref<DataTableInst>();
@@ -68,7 +68,7 @@ function rowKey(rowData) {
 async function query() {
   loading.value = true;
   try {
-    const { rows, total, pageCount } = await getUserList({
+    const { rows, total, pageCount } = await getClientUsers({
       page: page.value,
       pageSize: pageSize.value,
       search: searchConfirm.value,

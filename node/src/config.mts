@@ -1,29 +1,25 @@
-import fs from 'node:fs';
-import { createRequire } from 'module';
 import { dirname } from 'path';
-const require = createRequire(import.meta.url);
 import process from 'node:process';
+import { ClientType } from '@prisma/client';
 const ENV = process.env.ENV;
 export const CONFIG = {
-  systemClient: {
-    id: 'admin',
-    desc: 'admin',
-    client_id: 'admin',
-    client_secret: '42ea9BE#',
-    redirect_uris: [
-      // 用于本地直接起服务调试。
-      'http://127.0.0.1:5566/admin/authorize',
-      // 用于ui界面调试。
-      'http://127.0.0.1:5567/admin/authorize',
-      'https://admin.wittyna.com/admin/authorize',
-    ],
-  },
-  normalClients: [
+  clients: [
+    {
+      id: 'admin',
+      secret: '42ea9BE#',
+      desc: 'admin',
+      type: ClientType.SYSTEM,
+      redirect_uris: [
+        // 用于本地直接起服务调试。
+        'http://127.0.0.1:5566/admin/authorize',
+        'https://admin.wittyna.com/admin/authorize',
+      ],
+    },
     {
       id: 'tool-of-nana',
+      secret: '42ea9BE#',
       desc: 'tool-of-nana',
-      client_id: 'tool-of-nana',
-      client_secret: '42ea9BE#',
+      type: ClientType.OFFICIAL,
       redirect_uris: [
         'https://tool.wittyna.com/tool/authorize',
         // 用于ui界面调试。
@@ -31,7 +27,7 @@ export const CONFIG = {
       ],
     },
   ],
-  systemAdminUsers: [
+  users: [
     {
       id: 'admin',
       username: 'admin',
@@ -47,6 +43,28 @@ export const CONFIG = {
       id: 'rona',
       username: 'rona',
       password: 'luona0206',
+    },
+  ],
+  client2UserArr: [
+    {
+      client_id: 'admin',
+      user_id: 'admin',
+      is_client_admin: true,
+    },
+    {
+      client_id: 'admin',
+      user_id: 'baixiyang',
+      is_client_admin: true,
+    },
+    {
+      client_id: 'tool-of-nana',
+      user_id: 'baixiyang',
+      is_client_admin: true,
+    },
+    {
+      client_id: 'tool-of-nana',
+      user_id: 'rona',
+      is_client_admin: true,
     },
   ],
   redis: {

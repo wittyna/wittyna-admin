@@ -1,29 +1,40 @@
 import { DataTableColumns } from 'naive-ui';
-import { ClientView } from './type';
+import { UserView } from './type';
 import { formatDate } from '../../util/date';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
-import { ClientType } from '@prisma/client';
-import { deleteClient } from './service';
+import { deleteUser } from './service';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
   onEdit: (id: string) => void
-) => DataTableColumns<ClientView> = (refresh, onEdit) => {
+) => DataTableColumns<UserView> = (refresh, onEdit) => {
   async function onDeleteHandler(id: string) {
-    await deleteClient(id);
+    await deleteUser(id);
     refresh(false);
   }
-
   return [
     {
-      title: 'id',
-      key: 'id',
+      title: 'username',
+      key: 'username',
       width: 200,
     },
     {
-      title: 'type',
-      key: 'type',
-      width: 100,
+      title: 'email',
+      key: 'email',
+      width: 200,
+    },
+    {
+      title: 'phone',
+      key: 'phone',
+      width: 200,
+    },
+    {
+      title: 'is_system_admin',
+      key: 'is_system_admin',
+      width: 200,
+      render(row) {
+        return row.is_system_admin ? 'Yes' : 'No';
+      },
     },
     {
       title: 'created_at',
@@ -42,11 +53,6 @@ export const useColumns: (
       },
     },
     {
-      title: 'desc',
-      key: 'desc',
-      width: 350,
-    },
-    {
       title: 'actions',
       key: 'actions',
       width: 200,
@@ -54,10 +60,10 @@ export const useColumns: (
         return (
           <NSpace>
             <NButton
+              disabled={row.is_system_admin}
               text
               type="info"
               onClick={() => onEdit(row.id)}
-              disabled={row.type === ClientType.SYSTEM}
             >
               edit
             </NButton>
@@ -65,11 +71,7 @@ export const useColumns: (
               onPositiveClick={() => onDeleteHandler(row.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton
-                    text
-                    type="error"
-                    disabled={row.type === ClientType.SYSTEM}
-                  >
+                  <NButton disabled={row.is_system_admin} text type="error">
                     Delete
                   </NButton>
                 ),

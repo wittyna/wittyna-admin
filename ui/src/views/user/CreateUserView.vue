@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { Client } from './type';
-import { ClientType } from '@prisma/client';
+import { User } from './type';
 import { FormRules, FormInst } from 'naive-ui';
-import { upsertClient, getClient } from './service';
+import { upsertUser, getUser } from './service';
 import { message } from '../../util';
 
 const formRef = ref<FormInst>();
@@ -18,7 +17,7 @@ defineExpose({
     if (id) {
       loading.value = true;
       try {
-        const client = await getClient(id);
+        const client = await getUser(id);
         init(client);
       } catch (e) {
         //
@@ -33,55 +32,37 @@ const emit = defineEmits<{
 }>();
 
 // client reactive
-const model = reactive<Client>({} as Client);
+const model = reactive<User>({} as User);
 init();
-const typeOptions = [
-  { label: ClientType.THREE_PART, value: ClientType.THREE_PART },
-  { label: ClientType.OFFICIAL, value: ClientType.OFFICIAL },
-];
 
 const rules: FormRules = {
-  secret: {
+  username: {
     required: true,
-    message: 'secret is required',
+    message: 'username is required',
     trigger: ['input', 'blur'],
   },
-  desc: {
+  password: {
     required: true,
-    message: 'desc is required',
+    message: 'password is required',
     trigger: ['input', 'blur'],
   },
-  type: {
+  email: {
     required: true,
-    message: 'type is required',
+    message: 'email is required',
     trigger: ['input', 'blur'],
   },
-  redirect_uris: [
-    {
-      required: true,
-      validator(rule, value) {
-        if (!(value && value.length > 0 && value.some((one) => !!one))) {
-          return new Error('redirect_uris is required');
-        }
-        for (let one of value) {
-          try {
-            new URL(one);
-          } catch (e) {
-            return new Error('redirect_uris is invalid');
-          }
-        }
-        return true;
-      },
-      trigger: ['blur'],
-    },
-  ],
+  phone: {
+    required: true,
+    message: 'phone is required',
+    trigger: ['input', 'blur'],
+  },
 };
 
-async function upsertClient_() {
+async function upsertUser_() {
   await formRef.value.validate();
   commitLoading.value = true;
   try {
-    await upsertClient(model);
+    await upsertUser(model);
     show.value = false;
     emit('success');
     if (model.id) {
@@ -94,11 +75,12 @@ async function upsertClient_() {
   }
 }
 
-function init(client?: Client) {
+function init(client?: User) {
   Object.assign(model, {
-    secret: '',
-    desc: '',
-    type: ClientType.THREE_PART,
+    username: '',
+    password: '',
+    phone: '',
+    email: '',
     redirect_uris: [],
   });
   if (client) {
@@ -111,7 +93,7 @@ function init(client?: Client) {
   <NDrawer
     v-model:show="show"
     :width="502"
-    title="Create Client"
+    title="Create User"
     @after-leave="() => init()"
   >
     <NDrawerContent title="Create client" closable>
@@ -123,30 +105,26 @@ function init(client?: Client) {
         :model="model"
         :rules="rules"
       >
-        <NFormItem label="desc" path="desc">
-          <NInput v-model:value="model.desc" maxlength="256" />
+        <NFormItem label="username" path="username">
+          <NInput v-model:value="model.username" maxlength="64" />
         </NFormItem>
-        <NFormItem label="secret" path="secret">
+        <NFormItem label="password" path="password">
           <NInput
-            v-model:value="model.secret"
+            v-model:value="model.password"
             type="password"
             showPasswordOn="mousedown"
             maxlength="16"
           />
         </NFormItem>
-        <NFormItem label="type" path="type">
-          <NSelect v-model:value="model.type" :options="typeOptions" />
+        <NFormItem label="email" path="email">
+          <NInput v-model:value="model.email" maxlength="64" />
         </NFormItem>
-        <NFormItem label="redirect_uris" path="redirect_uris">
-          <NInput
-            :value="model.redirect_uris.join(',')"
-            maxlength="512"
-            @update:value="model.redirect_uris = $event.split(',')"
-          />
+        <NFormItem label="phone" path="phone">
+          <NInput v-model:value="model.phone" maxlength="32" />
         </NFormItem>
       </NForm>
       <template #footer>
-        <NButton type="primary" :loading="commitLoading" @click="upsertClient_"
+        <NButton type="primary" :loading="commitLoading" @click="upsertUser_"
           >commit</NButton
         >
       </template>

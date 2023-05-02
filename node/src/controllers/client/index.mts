@@ -17,9 +17,7 @@ import { Client, ClientType } from '@prisma/client';
 @Controller('client')
 export class ClientController {
   select = {
-    id: true,
     desc: true,
-    client_id: true,
     type: true,
     updated_at: true,
     created_at: true,
@@ -28,12 +26,11 @@ export class ClientController {
   async create(
     @Body()
     @Required()
-    @Required('client_secret')
+    @Required('secret')
     @Required('redirect_uris')
     client: Client,
     @Session() session: any
   ) {
-    console.log(session.userId, 11111);
     if (
       client.type !== ClientType.OFFICIAL &&
       client.type !== ClientType.THREE_PART
@@ -43,14 +40,20 @@ export class ClientController {
       });
     }
     return prismaClient.client.create({
-      data: client,
+      data: client as Client,
       select: this.select,
     });
   }
   @Put()
   async update(@Body() @Required() @Required('id') client: Client) {
-    // 只能组册普通客户端
-    client.type = ClientType.OFFICIAL;
+    if (
+      client.type !== ClientType.OFFICIAL &&
+      client.type !== ClientType.THREE_PART
+    ) {
+      throw new ResponseError({
+        error: 'invalid client type',
+      });
+    }
     return prismaClient.client.update({
       where: {
         id: client.id,
@@ -63,9 +66,13 @@ export class ClientController {
   async getOne(@Param('id') @Required() id: string) {
     return prismaClient.client.findUnique({
       where: {
-        id: id,
+        id,
       },
-      select: this.select,
+      select: {
+        ...this.select,
+        secret: true,
+        redirect_uris: true,
+      },
     });
   }
   @Get()
@@ -89,7 +96,7 @@ export class ClientController {
                 },
               },
               {
-                client_id: {
+                id: {
                   contains: search,
                 },
               },
@@ -121,19 +128,61 @@ export class ClientController {
       },
     });
   }
-  @Post(':id/users')
+  @Post(':id/user')
   async addUsers(
     @Param('id') @Required() id: string,
     @Body('ids') @Required() ids: string[]
   ) {
-    return prismaClient.client.update({
+    return prismaClient.client2User.createMany({
+      data: ids.map((user_id) => ({
+        user_id,
+        client_id: id,
+      })),
+    });
+  }
+
+  @Get(':id/user')
+  async getClientUsers(
+    @Param('id') @Required() id: string,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+    @Query('search') search = ''
+  ) {
+    page = Number(page);
+    pageSize = Number(pageSize);
+    return prismaClient.client2User.findMany({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
       where: {
-        id,
+        client_id: id,
+        OR: [
+          {
+            user: {
+              username: {
+                contains: search,
+              },
+            },
+          },
+          {
+            user: {
+              email: {
+                contains: search,
+              },
+            },
+          },
+          {
+            user: {
+              phone: {
+                contains: search,
+              },
+            },
+          },
+        ],
       },
-      data: {
-        users: {
-          connect: ids.map((id) => ({ id })),
-        },
+      select: {
+        user: true,
+        is_client_admin: true,
+        expires_at: true,
       },
     });
   }

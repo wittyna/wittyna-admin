@@ -13,5 +13,11 @@ export const router = createRouter({
       path: '/user',
       component: () => import('../views/user/UserView.vue'),
     },
+    {
+      path: '/',
+      redirect: {
+        name: 'user',
+      },
+    },
   ],
 });

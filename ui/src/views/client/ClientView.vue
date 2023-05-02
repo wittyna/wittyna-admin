@@ -4,7 +4,7 @@
       <NCol :span="6">
         <NInput
           v-model:value="search"
-          placeholder="search by desc,client_id,type"
+          placeholder="search by desc,id,type"
           @keyup.enter="doSearch"
         >
           <template #suffix>
@@ -15,7 +15,7 @@
         </NInput>
       </NCol>
       <div style="flex: 1"></div>
-      <NButton @click="createClientViewRef?.open"> create </NButton>
+      <NButton @click="() => createClientViewRef?.open()"> create </NButton>
     </NRow>
     <NDataTable
       ref="tableRef"
@@ -38,7 +38,7 @@
 <script lang="ts" setup>
 import { SearchOutline } from '@vicons/ionicons5';
 import { useColumns } from './columns';
-import { ref, watchEffect, reactive, watch } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getClientList } from './service';
 import CreateClientView from './CreateClientView.vue';
@@ -61,7 +61,7 @@ const pagination = reactive<PaginationProps>({
     return `Total is ${itemCount}.`;
   },
 });
-const columns = useColumns(refresh);
+const columns = useColumns(refresh, (id) => createClientViewRef.value.open(id));
 function rowKey(rowData) {
   return rowData.id;
 }

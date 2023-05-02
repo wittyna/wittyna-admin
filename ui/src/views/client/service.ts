@@ -19,8 +19,27 @@ export const getClientList = ({
     },
   });
 
+export const getClient = (id: string): Promise<Client> =>
+  request.get(`/admin/client/${encodeURIComponent(id)}`);
+
 export const deleteClient = (id: string): Promise<Client> =>
   request.delete(`/admin/client/${encodeURIComponent(id)}`);
 
-export const createClient = (client: Client): Promise<Client> =>
-  request.post(`/admin/client`, client);
+export const upsertClient = (client: Client): Promise<Client> => {
+  if (client.id) {
+    return request.put(`/admin/client`, client);
+  }
+  return request.post(`/admin/client`, client);
+};
+
+export const getClientUsers = (
+  clientId: string,
+  page: string,
+  pageSize: string
+): Promise<ListResponse<Client>> =>
+  request.get(`/admin/client/${encodeURIComponent(clientId)}/user`, {
+    params: {
+      page,
+      pageSize,
+    },
+  });
