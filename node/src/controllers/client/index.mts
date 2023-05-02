@@ -17,6 +17,7 @@ import { Client, ClientType } from '@prisma/client';
 @Controller('client')
 export class ClientController {
   select = {
+    id: true,
     desc: true,
     type: true,
     updated_at: true,
