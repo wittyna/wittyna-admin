@@ -49,7 +49,7 @@ const rules: FormRules = {
 };
 
 async function upsertUser_() {
-  await formRef.value.validate();
+  await formRef.value!.validate();
   commitLoading.value = true;
   try {
     await upsertUser(model);

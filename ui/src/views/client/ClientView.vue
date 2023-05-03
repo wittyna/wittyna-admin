@@ -50,6 +50,7 @@ import { getClientList } from './service';
 import CreateClientView from './CreateClientView.vue';
 import ClientUsersManage from './clientUsersManage/ClientUsersManage.vue';
 import { userinfo } from '../../main';
+import { Client } from './type';
 
 const tableRef = ref<DataTableInst>();
 const createClientViewRef = ref();
@@ -61,7 +62,7 @@ const loading = ref(true);
 
 const page = ref(1);
 const pageSize = ref(10);
-const data = ref([]);
+const data = ref<Client[]>([]);
 const pagination = reactive<PaginationProps>({
   page: 1,
   pageCount: 1,
@@ -75,7 +76,7 @@ const columns = useColumns(
   (id) => createClientViewRef.value.open(id),
   (id) => clientUsersManageRef.value.open(id)
 );
-function rowKey(rowData) {
+function rowKey(rowData: { id: string }) {
   return rowData.id;
 }
 async function query() {

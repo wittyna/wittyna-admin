@@ -48,6 +48,7 @@ import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getUserList } from './service';
 import CreateUserView from './CreateUserView.vue';
 import { userinfo } from '../../main';
+import { User } from './type';
 
 const tableRef = ref<DataTableInst>();
 const createUserViewRef = ref();
@@ -58,7 +59,7 @@ const loading = ref(true);
 
 const page = ref(1);
 const pageSize = ref(10);
-const data = ref([]);
+const data = ref<User[]>([]);
 const pagination = reactive<PaginationProps>({
   page: 1,
   pageCount: 1,
@@ -68,7 +69,7 @@ const pagination = reactive<PaginationProps>({
   },
 });
 const columns = useColumns(refresh, (id) => createUserViewRef.value.open(id));
-function rowKey(rowData) {
+function rowKey(rowData: { id: string }) {
   return rowData.id;
 }
 async function query() {

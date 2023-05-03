@@ -45,6 +45,7 @@ import { ref, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getClientUsers } from '../service';
 import AddUser from './AddUser.vue';
+import { Client2User, User } from '@prisma/client';
 
 const tableRef = ref<DataTableInst>();
 const addUserRef = ref();
@@ -57,7 +58,7 @@ const clientId = ref('');
 
 const page = ref(1);
 const pageSize = ref(10);
-const data = ref([]);
+const data = ref<(Client2User & { user: User })[]>([]);
 const pagination = reactive<PaginationProps>({
   page: 1,
   pageCount: 1,
@@ -67,7 +68,7 @@ const pagination = reactive<PaginationProps>({
   },
 });
 const columns = useColumns(refresh, clientId);
-function rowKey(rowData) {
+function rowKey(rowData: { id: string }) {
   return rowData.id;
 }
 async function query() {

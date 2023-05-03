@@ -1,5 +1,3 @@
-<script setup></script>
-
 <template>
   <NLayout class="root">
     <NLayoutHeader bordered style="height: 50px">

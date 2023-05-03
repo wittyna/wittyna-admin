@@ -6,6 +6,7 @@ import { DataTableColumns, PaginationProps, DataTableRowKey } from 'naive-ui';
 import { UserView } from '../../user/type';
 import { addClientUser } from '../service';
 import { message } from '../../../util';
+import { User } from '../../user/type';
 const show = ref(false);
 const loading = ref(false);
 const commitLoading = ref(false);
@@ -14,7 +15,7 @@ const search = ref('');
 const searchConfirm = ref('');
 const page = ref(1);
 const pageSize = ref(10);
-const data = ref([]);
+const data = ref<User[]>([]);
 const pagination = reactive<PaginationProps>({
   page: 1,
   pageCount: 1,
@@ -43,7 +44,7 @@ const columns: DataTableColumns<UserView> = [
     width: 200,
   },
 ];
-function rowKey(rowData) {
+function rowKey(rowData: { id: string }) {
   return rowData.id;
 }
 async function query() {

@@ -1,6 +1,7 @@
 import { request } from '../../request';
 import { Client } from './type';
 import { ListResponse } from '../../type';
+import { Client2User, User } from '@prisma/client';
 
 export const getClientList = ({
   page,
@@ -42,7 +43,7 @@ export const getClientUsers = ({
   page: number;
   pageSize: number;
   search: string;
-}): Promise<ListResponse<Client>> =>
+}): Promise<ListResponse<Client2User & { user: User }>> =>
   request.get(`/admin/client/${encodeURIComponent(clientId)}/user`, {
     params: {
       page,

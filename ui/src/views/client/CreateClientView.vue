@@ -59,7 +59,7 @@ const rules: FormRules = {
   redirect_uris: [
     {
       required: true,
-      validator(rule, value) {
+      validator(rule, value: string[]) {
         if (!(value && value.length > 0 && value.some((one) => !!one))) {
           return new Error('redirect_uris is required');
         }
@@ -78,7 +78,7 @@ const rules: FormRules = {
 };
 
 async function upsertClient_() {
-  await formRef.value.validate();
+  await formRef.value!.validate();
   commitLoading.value = true;
   try {
     await upsertClient(model);

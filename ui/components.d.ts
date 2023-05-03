@@ -11,11 +11,8 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     IHeader: typeof import('./src/components/IHeader/IHeader.vue')['default']
     IMenu: typeof import('./src/components/IMenu/IMenu.vue')['default']
-    LoginMain: typeof import("./src/components/LoginMain.vue")["default"]
-    Menu: typeof import("./src/components/IMenu/IMenu.vue")["default"]
     NButton: typeof import('naive-ui')['NButton']
     NCol: typeof import('naive-ui')['NCol']
-    NConfigProvider: typeof import("naive-ui")["NConfigProvider"]
     NDataTable: typeof import('naive-ui')['NDataTable']
     NDrawer: typeof import('naive-ui')['NDrawer']
     NDrawerContent: typeof import('naive-ui')['NDrawerContent']
@@ -30,7 +27,6 @@ declare module '@vue/runtime-core' {
     NMenu: typeof import('naive-ui')['NMenu']
     NRow: typeof import('naive-ui')['NRow']
     NSelect: typeof import('naive-ui')['NSelect']
-    NSpace: typeof import("naive-ui")["NSpace"]
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
