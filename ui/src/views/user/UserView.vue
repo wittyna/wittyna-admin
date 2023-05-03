@@ -15,7 +15,12 @@
         </NInput>
       </NCol>
       <div style="flex: 1"></div>
-      <NButton @click="() => createUserViewRef?.open()"> create </NButton>
+      <NButton
+        :disabled="!userinfo.is_client_admin"
+        @click="() => createUserViewRef?.open()"
+      >
+        create
+      </NButton>
     </NRow>
     <NDataTable
       ref="tableRef"
@@ -26,7 +31,7 @@
       :columns="columns"
       :data="data"
       :loading="loading"
-      :maxHeight="250"
+      :maxHeight="600"
     />
     <CreateUserView
       ref="createUserViewRef"
@@ -42,6 +47,7 @@ import { ref, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getUserList } from './service';
 import CreateUserView from './CreateUserView.vue';
+import { userinfo } from '../../main';
 
 const tableRef = ref<DataTableInst>();
 const createUserViewRef = ref();
@@ -58,7 +64,7 @@ const pagination = reactive<PaginationProps>({
   pageCount: 1,
   pageSize: 10,
   prefix({ itemCount }) {
-    return `Total is ${itemCount}.`;
+    return `total: ${itemCount}`;
   },
 });
 const columns = useColumns(refresh, (id) => createUserViewRef.value.open(id));

@@ -3,6 +3,8 @@ import { UserView } from './type';
 import { formatDate } from '../../util/date';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
 import { deleteUser } from './service';
+import { userinfo } from '../../main';
+import { message } from '../../util';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
@@ -10,6 +12,7 @@ export const useColumns: (
 ) => DataTableColumns<UserView> = (refresh, onEdit) => {
   async function onDeleteHandler(id: string) {
     await deleteUser(id);
+    message.success('remove success');
     refresh(false);
   }
   return [
@@ -27,14 +30,6 @@ export const useColumns: (
       title: 'phone',
       key: 'phone',
       width: 200,
-    },
-    {
-      title: 'is_system_admin',
-      key: 'is_system_admin',
-      width: 200,
-      render(row) {
-        return row.is_system_admin ? 'Yes' : 'No';
-      },
     },
     {
       title: 'created_at',
@@ -60,7 +55,7 @@ export const useColumns: (
         return (
           <NSpace>
             <NButton
-              disabled={row.is_system_admin}
+              disabled={!userinfo.is_client_admin}
               text
               type="info"
               onClick={() => onEdit(row.id)}
@@ -71,13 +66,17 @@ export const useColumns: (
               onPositiveClick={() => onDeleteHandler(row.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton disabled={row.is_system_admin} text type="error">
-                    Delete
+                  <NButton
+                    text
+                    type="error"
+                    disabled={!userinfo.is_client_admin}
+                  >
+                    delete
                   </NButton>
                 ),
               }}
             >
-              Are you sure to delete this client?
+              Are you sure to delete this user?
             </NPopconfirm>
           </NSpace>
         );

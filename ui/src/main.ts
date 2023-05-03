@@ -1,7 +1,8 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 import { router } from './router';
-export let userinfo: { username: string };
+import { Client2User, User } from '@prisma/client';
+export let userinfo: User & Client2User;
 fetch('/admin/userInfo').then(async (data) => {
   const json = await data.json();
   if (data.status === 200) {

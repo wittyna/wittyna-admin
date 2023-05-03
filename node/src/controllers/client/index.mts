@@ -12,8 +12,12 @@ import {
   Session,
 } from 'wittyna';
 import { prismaClient } from '../../index.mjs';
-import { Client, ClientType } from '@prisma/client';
-
+import { Client, ClientType, PrismaClient } from '@prisma/client';
+import {
+  checkClientAdmin,
+  checkMyClientAdmin,
+  SessionInfo,
+} from '../../service/index.mjs';
 @Controller('client')
 export class ClientController {
   select = {
@@ -30,8 +34,13 @@ export class ClientController {
     @Required('secret')
     @Required('redirect_uris')
     client: Client,
-    @Session() session: any
+    @Session() session: SessionInfo
   ) {
+    if (!(await checkMyClientAdmin(session))) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
     if (
       client.type !== ClientType.OFFICIAL &&
       client.type !== ClientType.THREE_PART
@@ -46,7 +55,18 @@ export class ClientController {
     });
   }
   @Put()
-  async update(@Body() @Required() @Required('id') client: Client) {
+  async update(
+    @Body() @Required() @Required('id') client: Client,
+    @Session() session: SessionInfo
+  ) {
+    if (
+      !(await checkClientAdmin(client.id, session.token_info.user_id)) &&
+      !(await checkMyClientAdmin(session))
+    ) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
     if (
       client.type !== ClientType.OFFICIAL &&
       client.type !== ClientType.THREE_PART
@@ -64,7 +84,18 @@ export class ClientController {
     });
   }
   @Get(':id')
-  async getOne(@Param('id') @Required() id: string) {
+  async getOne(
+    @Param('id') @Required() id: string,
+    @Session() session: SessionInfo
+  ) {
+    if (
+      !(await checkClientAdmin(id, session.token_info.user_id)) &&
+      !(await checkMyClientAdmin(session))
+    ) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
     return prismaClient.client.findUnique({
       where: {
         id,
@@ -80,41 +111,62 @@ export class ClientController {
   async getList(
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
-    @Query('search') search = ''
+    @Query('search') search = '',
+    @Session() session: SessionInfo
   ) {
     page = Number(page);
     pageSize = Number(pageSize);
+    const isSystemAdmin = await checkMyClientAdmin(session);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    type Where = Parameters<PrismaClient['client']['findMany']>[0]['where'];
+
+    const where_: Where = isSystemAdmin
+      ? {}
+      : {
+          client2UserArr: {
+            some: {
+              user_id: session.token_info.user_id,
+              is_client_admin: true,
+            },
+          },
+        };
+    const where: Where = search
+      ? {
+          ...where_,
+          OR: [
+            {
+              desc: {
+                contains: search,
+              },
+            },
+            {
+              id: {
+                contains: search,
+              },
+            },
+            ...(Object.values(ClientType).includes(search as ClientType)
+              ? [
+                  {
+                    type: {
+                      equals: search as ClientType,
+                    },
+                  },
+                ]
+              : []),
+          ],
+        }
+      : where_;
+
     const rows = await prismaClient.client.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
       select: this.select,
-      where: search
-        ? {
-            OR: [
-              {
-                desc: {
-                  contains: search,
-                },
-              },
-              {
-                id: {
-                  contains: search,
-                },
-              },
-              ...(Object.values(ClientType).includes(search as ClientType)
-                ? [
-                    {
-                      type: {
-                        equals: search as ClientType,
-                      },
-                    },
-                  ]
-                : []),
-            ],
-          }
-        : undefined,
+      where,
     });
-    const total = await prismaClient.client.count();
+    const total = await prismaClient.client.count({
+      where,
+    });
     return {
       total,
       pageCount: Math.ceil(total / pageSize),
@@ -122,7 +174,15 @@ export class ClientController {
     };
   }
   @Delete(':id')
-  async delete(@Param('id') @Required() id: string) {
+  async delete(
+    @Param('id') @Required() id: string,
+    @Session() session: SessionInfo
+  ) {
+    if (!(await checkMyClientAdmin(session))) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
     return prismaClient.client.delete({
       where: {
         id: id,
@@ -130,15 +190,93 @@ export class ClientController {
     });
   }
   @Post(':id/user')
-  async addUsers(
-    @Param('id') @Required() id: string,
-    @Body('ids') @Required() ids: string[]
+  async addClientUsers(
+    @Param('id') @Required() clientId: string,
+    @Body('userIds') @Required() userIds: string[],
+    @Session() session: SessionInfo
   ) {
-    return prismaClient.client2User.createMany({
-      data: ids.map((user_id) => ({
-        user_id,
-        client_id: id,
-      })),
+    const isClientAdmin = await checkClientAdmin(
+      clientId,
+      session.token_info.user_id
+    );
+    if (!isClientAdmin) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
+    return await prismaClient.$transaction([
+      ...userIds.map((user_id) =>
+        prismaClient.client2User.upsert({
+          where: {
+            client_id_user_id: {
+              user_id,
+              client_id: clientId,
+            },
+          },
+          create: { user_id, client_id: clientId },
+          update: { user_id, client_id: clientId },
+        })
+      ),
+    ]);
+  }
+
+  @Put(':client_id/admin')
+  async setClientAdmin(
+    @Param('client_id') @Required() client_id: string,
+    @Body('user_id') @Required() user_id: string,
+    @Body('is_client_admin') @Required() is_client_admin: boolean,
+    @Session() session: SessionInfo
+  ) {
+    const isClientAdmin = await checkClientAdmin(
+      client_id,
+      session.token_info.user_id
+    );
+    if (!isClientAdmin) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
+    return prismaClient.client2User.update({
+      where: {
+        client_id_user_id: {
+          client_id,
+          user_id,
+        },
+      },
+      data: {
+        is_client_admin,
+      },
+    });
+  }
+
+  @Delete(':id/user/:user_id')
+  async deleteClientUser(
+    @Param('id') @Required() clientId: string,
+    @Param('user_id') @Required() userId: string,
+    @Session() session: SessionInfo
+  ) {
+    const isClientAdmin = await checkClientAdmin(
+      clientId,
+      session.token_info.user_id
+    );
+    if (!isClientAdmin) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
+    const isDeleteClientAdmin = await checkClientAdmin(clientId, userId);
+    if (isDeleteClientAdmin) {
+      throw new ResponseError({
+        error: 'can not delete admin',
+      });
+    }
+    return prismaClient.client2User.delete({
+      where: {
+        client_id_user_id: {
+          client_id: clientId,
+          user_id: userId,
+        },
+      },
     });
   }
 
@@ -151,40 +289,49 @@ export class ClientController {
   ) {
     page = Number(page);
     pageSize = Number(pageSize);
-    return prismaClient.client2User.findMany({
+    const where = {
+      client_id: id,
+      OR: [
+        {
+          user: {
+            username: {
+              contains: search,
+            },
+          },
+        },
+        {
+          user: {
+            email: {
+              contains: search,
+            },
+          },
+        },
+        {
+          user: {
+            phone: {
+              contains: search,
+            },
+          },
+        },
+      ],
+    };
+    const rows = await prismaClient.client2User.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
-      where: {
-        client_id: id,
-        OR: [
-          {
-            user: {
-              username: {
-                contains: search,
-              },
-            },
-          },
-          {
-            user: {
-              email: {
-                contains: search,
-              },
-            },
-          },
-          {
-            user: {
-              phone: {
-                contains: search,
-              },
-            },
-          },
-        ],
-      },
+      where,
       select: {
         user: true,
         is_client_admin: true,
         expires_at: true,
       },
     });
+    const total = await prismaClient.client2User.count({
+      where,
+    });
+    return {
+      total,
+      pageCount: Math.ceil(total / pageSize),
+      rows,
+    };
   }
 }

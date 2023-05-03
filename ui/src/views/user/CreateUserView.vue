@@ -17,8 +17,8 @@ defineExpose({
     if (id) {
       loading.value = true;
       try {
-        const client = await getUser(id);
-        init(client);
+        const user = await getUser(id);
+        init(user);
       } catch (e) {
         //
       }
@@ -46,16 +46,6 @@ const rules: FormRules = {
     message: 'password is required',
     trigger: ['input', 'blur'],
   },
-  email: {
-    required: true,
-    message: 'email is required',
-    trigger: ['input', 'blur'],
-  },
-  phone: {
-    required: true,
-    message: 'phone is required',
-    trigger: ['input', 'blur'],
-  },
 };
 
 async function upsertUser_() {
@@ -75,28 +65,22 @@ async function upsertUser_() {
   }
 }
 
-function init(client?: User) {
+function init(user?: User) {
   Object.assign(model, {
     username: '',
     password: '',
     phone: '',
     email: '',
-    redirect_uris: [],
   });
-  if (client) {
-    Object.assign(model, client);
+  if (user) {
+    Object.assign(model, user);
   }
 }
 </script>
 
 <template>
-  <NDrawer
-    v-model:show="show"
-    :width="502"
-    title="Create User"
-    @after-leave="() => init()"
-  >
-    <NDrawerContent title="Create client" closable>
+  <NDrawer v-model:show="show" :width="502" @after-leave="() => init()">
+    <NDrawerContent title="Create User" closable>
       <NForm
         v-if="!loading"
         ref="formRef"

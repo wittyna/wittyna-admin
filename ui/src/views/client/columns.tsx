@@ -4,13 +4,16 @@ import { formatDate } from '../../util/date';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
 import { ClientType } from '@prisma/client';
 import { deleteClient } from './service';
+import { message } from '../../util';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
-  onEdit: (id: string) => void
-) => DataTableColumns<ClientView> = (refresh, onEdit) => {
+  onEdit: (id: string) => void,
+  onManageUser: (id: string) => void
+) => DataTableColumns<ClientView> = (refresh, onEdit, onManageUser) => {
   async function onDeleteHandler(id: string) {
     await deleteClient(id);
+    message.success('remove success');
     refresh(false);
   }
 
@@ -60,6 +63,9 @@ export const useColumns: (
               disabled={row.type === ClientType.SYSTEM}
             >
               edit
+            </NButton>
+            <NButton text type="info" onClick={() => onManageUser(row.id)}>
+              users
             </NButton>
             <NPopconfirm
               onPositiveClick={() => onDeleteHandler(row.id)}

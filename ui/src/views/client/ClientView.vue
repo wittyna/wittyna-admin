@@ -15,7 +15,12 @@
         </NInput>
       </NCol>
       <div style="flex: 1"></div>
-      <NButton @click="() => createClientViewRef?.open()"> create </NButton>
+      <NButton
+        :disabled="!userinfo.is_client_admin"
+        @click="() => createClientViewRef?.open()"
+      >
+        create
+      </NButton>
     </NRow>
     <NDataTable
       ref="tableRef"
@@ -26,12 +31,13 @@
       :columns="columns"
       :data="data"
       :loading="loading"
-      :maxHeight="250"
+      :maxHeight="600"
     />
     <CreateClientView
       ref="createClientViewRef"
       @success="refresh(true)"
     ></CreateClientView>
+    <ClientUsersManage ref="clientUsersManageRef"></ClientUsersManage>
   </div>
 </template>
 
@@ -42,9 +48,12 @@ import { ref, reactive, watch } from 'vue';
 import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getClientList } from './service';
 import CreateClientView from './CreateClientView.vue';
+import ClientUsersManage from './clientUsersManage/ClientUsersManage.vue';
+import { userinfo } from '../../main';
 
 const tableRef = ref<DataTableInst>();
 const createClientViewRef = ref();
+const clientUsersManageRef = ref();
 
 const search = ref('');
 const searchConfirm = ref('');
@@ -58,10 +67,14 @@ const pagination = reactive<PaginationProps>({
   pageCount: 1,
   pageSize: 10,
   prefix({ itemCount }) {
-    return `Total is ${itemCount}.`;
+    return `total: ${itemCount}`;
   },
 });
-const columns = useColumns(refresh, (id) => createClientViewRef.value.open(id));
+const columns = useColumns(
+  refresh,
+  (id) => createClientViewRef.value.open(id),
+  (id) => clientUsersManageRef.value.open(id)
+);
 function rowKey(rowData) {
   return rowData.id;
 }

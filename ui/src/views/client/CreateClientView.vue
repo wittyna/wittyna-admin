@@ -108,12 +108,7 @@ function init(client?: Client) {
 </script>
 
 <template>
-  <NDrawer
-    v-model:show="show"
-    :width="502"
-    title="Create Client"
-    @after-leave="() => init()"
-  >
+  <NDrawer v-model:show="show" :width="502" @after-leave="() => init()">
     <NDrawerContent title="Create client" closable>
       <NForm
         v-if="!loading"

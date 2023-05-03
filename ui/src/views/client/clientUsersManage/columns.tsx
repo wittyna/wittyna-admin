@@ -1,30 +1,57 @@
-import { DataTableColumns } from 'naive-ui';
-import { UserView } from '../../user/type';
+import { DataTableColumns, NSwitch } from 'naive-ui';
+import { Client2User, User } from '@prisma/client';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
+import { removeClientUser, setClientAdmin } from '../service';
+import { message } from '../../../util';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
-  onEdit: (id: string) => void
-) => DataTableColumns<UserView> = (refresh, onEdit) => {
-  async function onDeleteHandler(id: string) {
-    await deleteUser(id);
+  clientId: Ref<string>
+) => DataTableColumns<Client2User & { user: User }> = (refresh, clientId) => {
+  async function onRemoveHandler(userId: string) {
+    await removeClientUser({
+      userId,
+      clientId: clientId.value,
+    });
+    message.success('remove success');
     refresh(false);
   }
   return [
     {
       title: 'username',
-      key: 'username',
+      key: 'user.username',
       width: 200,
     },
     {
       title: 'email',
-      key: 'email',
+      key: 'user.email',
       width: 200,
     },
     {
       title: 'phone',
-      key: 'phone',
+      key: 'user.phone',
       width: 200,
+    },
+    {
+      title: 'is_client_admin',
+      key: 'is_client_admin',
+      width: 200,
+      render(row) {
+        return (
+          <NSwitch
+            value={row.is_client_admin}
+            onUpdate:value={async (v) => {
+              await setClientAdmin({
+                user_id: row.user.id,
+                client_id: clientId.value,
+                is_client_admin: v,
+              });
+              message.success('update success');
+              row.is_client_admin = v;
+            }}
+          ></NSwitch>
+        );
+      },
     },
     {
       title: 'actions',
@@ -33,25 +60,17 @@ export const useColumns: (
       render(row) {
         return (
           <NSpace>
-            <NButton
-              disabled={row.is_system_admin}
-              text
-              type="info"
-              onClick={() => onEdit(row.id)}
-            >
-              edit
-            </NButton>
             <NPopconfirm
-              onPositiveClick={() => onDeleteHandler(row.id)}
+              onPositiveClick={() => onRemoveHandler(row.user.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton disabled={row.is_system_admin} text type="error">
-                    Delete
+                  <NButton text type="error" disabled={row.is_client_admin}>
+                    remove
                   </NButton>
                 ),
               }}
             >
-              Are you sure to delete this client?
+              Are you sure to remove this user?
             </NPopconfirm>
           </NSpace>
         );

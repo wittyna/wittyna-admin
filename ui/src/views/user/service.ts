@@ -25,9 +25,9 @@ export const getUser = (id: string): Promise<User> =>
 export const deleteUser = (id: string): Promise<User> =>
   request.delete(`/admin/user/${encodeURIComponent(id)}`);
 
-export const upsertUser = (client: User): Promise<User> => {
-  if (client.id) {
-    return request.put(`/admin/user`, client);
+export const upsertUser = (user: User): Promise<User> => {
+  if (user.id) {
+    return request.put(`/admin/user`, user);
   }
-  return request.post(`/admin/user`, client);
+  return request.post(`/admin/user`, user);
 };

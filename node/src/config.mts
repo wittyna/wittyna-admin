@@ -66,6 +66,11 @@ export const CONFIG = {
       user_id: 'rona',
       is_client_admin: true,
     },
+    {
+      client_id: 'admin',
+      user_id: 'rona',
+      is_client_admin: false,
+    },
   ],
   redis: {
     host: '127.0.0.1',
