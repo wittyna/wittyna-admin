@@ -1,6 +1,7 @@
 import { dirname } from 'path';
 import process from 'node:process';
 import { ClientType } from '@prisma/client';
+import { sha256 } from './utils/encrypt.mjs';
 const ENV = process.env.ENV;
 export const CONFIG = {
   clients: [
@@ -31,18 +32,18 @@ export const CONFIG = {
     {
       id: 'admin',
       username: 'admin',
-      password: '42ea9BE#',
+      password: sha256('42ea9BE#'),
     },
     {
       id: 'baixiyang',
       username: 'baixiyang',
       email: 'baixiyang@outlook.com',
-      password: '42ea9BE#',
+      password: sha256('42ea9BE#'),
     },
     {
       id: 'rona',
       username: 'rona',
-      password: 'luona0206',
+      password: sha256('42ea9BE#'),
     },
   ],
   client2UserArr: [

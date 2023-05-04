@@ -173,9 +173,9 @@ export class ClientController {
       rows,
     };
   }
-  @Delete(':id')
+  @Delete(':clientId')
   async delete(
-    @Param('id') @Required() id: string,
+    @Param('clientId') @Required() clientId: string,
     @Session() session: SessionInfo
   ) {
     if (!(await checkMyClientAdmin(session))) {
@@ -183,9 +183,14 @@ export class ClientController {
         error: 'no permission',
       });
     }
+    await prismaClient.client2User.deleteMany({
+      where: {
+        clientId,
+      },
+    });
     return prismaClient.client.delete({
       where: {
-        id: id,
+        id: clientId,
       },
     });
   }

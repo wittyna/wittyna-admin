@@ -14,6 +14,7 @@ import {
 import { prismaClient } from '../../index.mjs';
 import { User } from '@prisma/client';
 import { checkMyClientAdmin, SessionInfo } from '../../service/index.mjs';
+import { sha256 } from '../../utils/encrypt.mjs';
 
 @Controller('user')
 export class UserController {
@@ -35,6 +36,7 @@ export class UserController {
         error: 'no permission',
       });
     }
+    user.password = sha256(user.password);
     return prismaClient.user.create({
       data: user,
       select: this.select,
@@ -49,6 +51,9 @@ export class UserController {
       throw new ResponseError({
         error: 'no permission',
       });
+    }
+    if (user.password) {
+      user.password = sha256(user.password);
     }
     return prismaClient.user.update({
       where: {
@@ -75,7 +80,6 @@ export class UserController {
       },
       select: {
         ...this.select,
-        password: true,
       },
     });
   }
@@ -146,6 +150,11 @@ export class UserController {
         error: 'cannot delete admin',
       });
     }
+    await prismaClient.client2User.deleteMany({
+      where: {
+        userId,
+      },
+    });
     return prismaClient.user.delete({
       where: {
         id: userId,

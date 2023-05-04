@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref, Ref } from 'vue';
 import { User } from './type';
 import { FormRules, FormInst } from 'naive-ui';
 import { upsertUser, getUser } from './service';
@@ -10,11 +10,14 @@ const formRef = ref<FormInst>();
 const show = ref(false);
 const commitLoading = ref(false);
 const loading = ref(true);
+const isEdit = ref(false);
+const isEditPassword = ref(false);
 
 defineExpose({
   async open(id?: string) {
     show.value = true;
     if (id) {
+      isEdit.value = true;
       loading.value = true;
       try {
         const user = await getUser(id);
@@ -22,6 +25,8 @@ defineExpose({
       } catch (e) {
         //
       }
+    } else {
+      isEdit.value = false;
     }
     loading.value = false;
   },
@@ -35,19 +40,21 @@ const emit = defineEmits<{
 const model = reactive<User>({} as User);
 init();
 
-const rules: FormRules = {
+const rules = computed<FormRules>(() => ({
   username: {
     required: true,
     message: 'username is required',
     trigger: ['input', 'blur'],
   },
   password: {
-    required: true,
+    required: !isEdit.value,
     message: 'password is required',
     trigger: ['input', 'blur'],
   },
-};
-
+}));
+const showPassword = computed<boolean>(
+  () => !isEdit.value || isEditPassword.value
+);
 async function upsertUser_() {
   await formRef.value!.validate();
   commitLoading.value = true;
@@ -80,7 +87,7 @@ function init(user?: User) {
 
 <template>
   <NDrawer v-model:show="show" :width="502" @after-leave="() => init()">
-    <NDrawerContent title="Create User" closable>
+    <NDrawerContent :title="isEdit ? 'Edit User' : 'Create User'" closable>
       <NForm
         v-if="!loading"
         ref="formRef"
@@ -94,11 +101,30 @@ function init(user?: User) {
         </NFormItem>
         <NFormItem label="password" path="password">
           <NInput
+            v-if="showPassword"
             v-model:value="model.password"
             type="password"
             showPasswordOn="mousedown"
             maxlength="16"
           />
+          <template v-if="isEdit">
+            <NButton
+              v-if="!isEditPassword"
+              style="margin-left: 8px"
+              text
+              type="primary"
+              @click="isEditPassword = true"
+              >Change</NButton
+            >
+            <NButton
+              v-else
+              style="margin-left: 8px"
+              text
+              type="primary"
+              @click="isEditPassword = false"
+              >Cancel</NButton
+            >
+          </template>
         </NFormItem>
         <NFormItem label="email" path="email">
           <NInput v-model:value="model.email" maxlength="64" />
