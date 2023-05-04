@@ -3,11 +3,15 @@ import { Client2User, User } from '@prisma/client';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
 import { removeClientUser, setClientAdmin } from '../service';
 import { message } from '../../../util';
+import { formatDate2 } from '../../../util/date';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
   clientId: Ref<string>
-) => DataTableColumns<Client2User & { user: User }> = (refresh, clientId) => {
+) => DataTableColumns<Client2User & { user: User; expiresAt: string }> = (
+  refresh,
+  clientId
+) => {
   async function onRemoveHandler(userId: string) {
     await removeClientUser({
       userId,
@@ -20,7 +24,7 @@ export const useColumns: (
     {
       title: 'Username',
       key: 'user.username',
-      width: 200,
+      width: 150,
     },
     {
       title: 'Email',
@@ -30,12 +34,15 @@ export const useColumns: (
     {
       title: 'Phone',
       key: 'user.phone',
-      width: 200,
+      width: 150,
     },
     {
       title: 'Expires at',
       key: 'expiresAt',
-      width: 200,
+      width: 300,
+      render(row) {
+        return row.expiresAt ? formatDate2(row.expiresAt) : '';
+      },
     },
     {
       title: 'Is client admin',

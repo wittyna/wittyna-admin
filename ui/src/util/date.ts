@@ -8,3 +8,11 @@ export function formatDate(dateString: string) {
     second: '2-digit',
   }).format(new Date(dateString));
 }
+
+export function formatDate2(dateString: string) {
+  return Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(dateString));
+}
