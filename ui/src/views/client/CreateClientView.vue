@@ -84,9 +84,9 @@ async function upsertClient_() {
     show.value = false;
     emit('success');
     if (model.id) {
-      message.success('update success');
+      message.success('Update success');
     } else {
-      message.success('create success');
+      message.success('Create success');
     }
   } finally {
     commitLoading.value = false;
@@ -141,7 +141,7 @@ function init(client?: Client) {
       </NForm>
       <template #footer>
         <NButton type="primary" :loading="commitLoading" @click="upsertClient_"
-          >commit</NButton
+          >Commit</NButton
         >
       </template>
     </NDrawerContent>

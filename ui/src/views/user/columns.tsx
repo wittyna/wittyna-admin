@@ -17,22 +17,22 @@ export const useColumns: (
   }
   return [
     {
-      title: 'username',
+      title: 'Username',
       key: 'username',
       width: 200,
     },
     {
-      title: 'email',
+      title: 'Email',
       key: 'email',
       width: 200,
     },
     {
-      title: 'phone',
+      title: 'Phone',
       key: 'phone',
       width: 200,
     },
     {
-      title: 'created_at',
+      title: 'Created at',
       key: 'created_at',
       width: 200,
       render(row) {
@@ -40,7 +40,7 @@ export const useColumns: (
       },
     },
     {
-      title: 'updated_at',
+      title: 'Updated at',
       key: 'updated_at',
       width: 200,
       render(row) {
@@ -48,7 +48,7 @@ export const useColumns: (
       },
     },
     {
-      title: 'actions',
+      title: 'Actions',
       key: 'actions',
       width: 200,
       render(row) {
@@ -60,7 +60,7 @@ export const useColumns: (
               type="info"
               onClick={() => onEdit(row.id)}
             >
-              edit
+              Edit
             </NButton>
             <NPopconfirm
               onPositiveClick={() => onDeleteHandler(row.id)}
@@ -71,7 +71,7 @@ export const useColumns: (
                     type="error"
                     disabled={!userinfo.is_client_admin}
                   >
-                    delete
+                    Delete
                   </NButton>
                 ),
               }}

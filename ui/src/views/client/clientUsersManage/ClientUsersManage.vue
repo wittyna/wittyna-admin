@@ -21,7 +21,7 @@
           </NInput>
         </NCol>
         <div style="flex: 1"></div>
-        <NButton @click="() => addUserRef?.open(clientId)"> add </NButton>
+        <NButton @click="() => addUserRef?.open(clientId)"> Add </NButton>
       </NRow>
       <NDataTable
         ref="tableRef"

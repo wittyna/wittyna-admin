@@ -19,7 +19,7 @@
         :disabled="!userinfo.is_client_admin"
         @click="() => createUserViewRef?.open()"
       >
-        create
+        Create
       </NButton>
     </NRow>
     <NDataTable

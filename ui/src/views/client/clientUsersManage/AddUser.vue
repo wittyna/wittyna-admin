@@ -29,17 +29,17 @@ const columns: DataTableColumns<UserView> = [
     type: 'selection',
   },
   {
-    title: 'username',
+    title: 'Username',
     key: 'username',
     width: 200,
   },
   {
-    title: 'email',
+    title: 'Email',
     key: 'email',
     width: 200,
   },
   {
-    title: 'phone',
+    title: 'Phone',
     key: 'phone',
     width: 200,
   },
@@ -55,7 +55,7 @@ async function query() {
       pageSize: pageSize.value,
       search: searchConfirm.value,
     });
-    data.value = rows;
+    (data.value as User[]) = rows;
     pagination.pageCount = pageCount;
     pagination.itemCount = total;
   } finally {
@@ -163,7 +163,7 @@ defineExpose({
       />
       <template #footer>
         <NButton type="primary" :loading="commitLoading" @click="addClientUser_"
-          >commit</NButton
+          >Commit</NButton
         >
       </template>
     </NDrawerContent>

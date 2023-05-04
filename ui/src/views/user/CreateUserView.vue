@@ -109,7 +109,7 @@ function init(user?: User) {
       </NForm>
       <template #footer>
         <NButton type="primary" :loading="commitLoading" @click="upsertUser_"
-          >commit</NButton
+          >Commit</NButton
         >
       </template>
     </NDrawerContent>

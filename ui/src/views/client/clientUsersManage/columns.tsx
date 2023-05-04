@@ -18,22 +18,22 @@ export const useColumns: (
   }
   return [
     {
-      title: 'username',
+      title: 'Username',
       key: 'user.username',
       width: 200,
     },
     {
-      title: 'email',
+      title: 'Email',
       key: 'user.email',
       width: 200,
     },
     {
-      title: 'phone',
+      title: 'Phone',
       key: 'user.phone',
       width: 200,
     },
     {
-      title: 'is_client_admin',
+      title: 'Is client admin',
       key: 'is_client_admin',
       width: 200,
       render(row) {
@@ -46,7 +46,7 @@ export const useColumns: (
                 client_id: clientId.value,
                 is_client_admin: v,
               });
-              message.success('update success');
+              message.success('Update success');
               row.is_client_admin = v;
             }}
           ></NSwitch>
@@ -65,7 +65,7 @@ export const useColumns: (
               v-slots={{
                 trigger: () => (
                   <NButton text type="error" disabled={row.is_client_admin}>
-                    remove
+                    Remove
                   </NButton>
                 ),
               }}

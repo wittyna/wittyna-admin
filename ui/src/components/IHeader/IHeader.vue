@@ -12,7 +12,7 @@
     &nbsp;&nbsp;
     {{ userinfo.username }}
     &nbsp;&nbsp;
-    <NButton text size="small" type="primary" @click="logout"> logout </NButton>
+    <NButton text size="small" type="primary" @click="logout"> Logout </NButton>
   </div>
 </template>
 

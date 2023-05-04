@@ -18,17 +18,17 @@ export const useColumns: (
 
   return [
     {
-      title: 'id',
+      title: 'Id',
       key: 'id',
       width: 200,
     },
     {
-      title: 'type',
+      title: 'Type',
       key: 'type',
       width: 100,
     },
     {
-      title: 'created_at',
+      title: 'Created at',
       key: 'created_at',
       width: 200,
       render(row) {
@@ -36,7 +36,7 @@ export const useColumns: (
       },
     },
     {
-      title: 'updated_at',
+      title: 'Updated at',
       key: 'updated_at',
       width: 200,
       render(row) {
@@ -44,12 +44,12 @@ export const useColumns: (
       },
     },
     {
-      title: 'desc',
+      title: 'Desc',
       key: 'desc',
       width: 350,
     },
     {
-      title: 'actions',
+      title: 'Actions',
       key: 'actions',
       width: 200,
       render(row) {
@@ -61,10 +61,10 @@ export const useColumns: (
               onClick={() => onEdit(row.id)}
               disabled={row.type === ClientType.SYSTEM}
             >
-              edit
+              Edit
             </NButton>
             <NButton text type="info" onClick={() => onManageUser(row.id)}>
-              users
+              Users
             </NButton>
             <NPopconfirm
               onPositiveClick={() => onDeleteHandler(row.id)}

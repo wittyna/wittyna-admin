@@ -19,7 +19,7 @@
         :disabled="!userinfo.is_client_admin"
         @click="() => createClientViewRef?.open()"
       >
-        create
+        Create
       </NButton>
     </NRow>
     <NDataTable
@@ -87,7 +87,7 @@ async function query() {
       pageSize: pageSize.value,
       search: searchConfirm.value,
     });
-    data.value = rows;
+    (data.value as Client[]) = rows;
     pagination.pageCount = pageCount;
     pagination.itemCount = total;
   } finally {
