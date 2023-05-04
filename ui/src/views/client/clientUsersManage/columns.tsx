@@ -33,6 +33,11 @@ export const useColumns: (
       width: 200,
     },
     {
+      title: 'Expires at',
+      key: 'expiresAt',
+      width: 200,
+    },
+    {
       title: 'Is client admin',
       key: 'isClientAdmin',
       width: 200,
