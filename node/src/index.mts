@@ -36,8 +36,8 @@ startServer({
       },
     }),
     authMiddleWare({
-      client_id: CONFIG.clients[0].id,
-      client_secret: CONFIG.clients[0].secret,
+      clientId: CONFIG.clients[0].id,
+      clientSecret: CONFIG.clients[0].secret,
       apiPrefix: `${CONFIG.iss}/admin`,
       uiUrl: CONFIG.iss,
       authServerOrigin: CONFIG.authIss,

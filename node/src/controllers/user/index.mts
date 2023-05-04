@@ -135,7 +135,7 @@ export class UserController {
     }
     const users = await prismaClient.client2User.findMany({
       where: {
-        clientId: session.token_info.client_id,
+        clientId: session.tokenInfo.clientId,
         userId,
         isClientAdmin: true,
       },

@@ -60,7 +60,7 @@ export class ClientController {
     @Session() session: SessionInfo
   ) {
     if (
-      !(await checkClientAdmin(client.id, session.token_info.user_id)) &&
+      !(await checkClientAdmin(client.id, session.tokenInfo.userId)) &&
       !(await checkMyClientAdmin(session))
     ) {
       throw new ResponseError({
@@ -89,7 +89,7 @@ export class ClientController {
     @Session() session: SessionInfo
   ) {
     if (
-      !(await checkClientAdmin(id, session.token_info.user_id)) &&
+      !(await checkClientAdmin(id, session.tokenInfo.userId)) &&
       !(await checkMyClientAdmin(session))
     ) {
       throw new ResponseError({
@@ -126,7 +126,7 @@ export class ClientController {
       : {
           client2UserArr: {
             some: {
-              userId: session.token_info.user_id,
+              userId: session.tokenInfo.userId,
               isClientAdmin: true,
             },
           },
@@ -197,7 +197,7 @@ export class ClientController {
   ) {
     const isClientAdmin = await checkClientAdmin(
       clientId,
-      session.token_info.user_id
+      session.tokenInfo.userId
     );
     if (!isClientAdmin) {
       throw new ResponseError({
@@ -229,7 +229,7 @@ export class ClientController {
   ) {
     const isClientAdmin_ = await checkClientAdmin(
       clientId,
-      session.token_info.user_id
+      session.tokenInfo.userId
     );
     if (!isClientAdmin_) {
       throw new ResponseError({
@@ -257,7 +257,7 @@ export class ClientController {
   ) {
     const isClientAdmin = await checkClientAdmin(
       clientId,
-      session.token_info.user_id
+      session.tokenInfo.userId
     );
     if (!isClientAdmin) {
       throw new ResponseError({

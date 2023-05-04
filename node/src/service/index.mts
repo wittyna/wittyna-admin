@@ -1,10 +1,7 @@
 import { prismaClient } from '../index.mjs';
 
 export async function checkMyClientAdmin(session: SessionInfo) {
-  return checkClientAdmin(
-    session.token_info.client_id,
-    session.token_info.user_id
-  );
+  return checkClientAdmin(session.tokenInfo.clientId, session.tokenInfo.userId);
 }
 
 export async function checkClientAdmin(clientId: string, userId: string) {
@@ -23,8 +20,8 @@ export async function checkClientAdmin(clientId: string, userId: string) {
 }
 
 export interface SessionInfo {
-  token_info: {
-    user_id: string;
-    client_id: string;
+  tokenInfo: {
+    userId: string;
+    clientId: string;
   };
 }
