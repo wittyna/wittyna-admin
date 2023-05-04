@@ -21,10 +21,3 @@ request.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export const login = (data: {
-  username: string;
-  password: string;
-}): Promise<{ redirect_uri: string }> => {
-  return request.post('/auth/login', data);
-};

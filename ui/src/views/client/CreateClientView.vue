@@ -55,18 +55,18 @@ const rules: FormRules = {
     message: 'type is required',
     trigger: ['input', 'blur'],
   },
-  redirect_uris: [
+  redirectUris: [
     {
       required: true,
       validator(rule, value: string[]) {
         if (!(value && value.length > 0 && value.some((one) => !!one))) {
-          return new Error('redirect_uris is required');
+          return new Error('redirect uris is required');
         }
         for (let one of value) {
           try {
             new URL(one);
           } catch (e) {
-            return new Error('redirect_uris is invalid');
+            return new Error('redirect uris is invalid');
           }
         }
         return true;
@@ -131,11 +131,11 @@ function init(client?: Client) {
         <NFormItem label="type" path="type">
           <NSelect v-model:value="model.type" :options="typeOptions" />
         </NFormItem>
-        <NFormItem label="redirect_uris" path="redirect_uris">
+        <NFormItem label="redirect uris" path="redirectUris">
           <NInput
-            :value="model.redirect_uris.join(',')"
+            :value="model.redirectUris.join(',')"
             maxlength="512"
-            @update:value="model.redirect_uris = $event.split(',')"
+            @update:value="model.redirectUris = $event.split(',')"
           />
         </NFormItem>
       </NForm>

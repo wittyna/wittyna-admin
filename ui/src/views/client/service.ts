@@ -77,16 +77,16 @@ export const addClientUser = ({
   });
 
 export async function setClientAdmin({
-  client_id,
-  user_id,
-  is_client_admin,
+  clientId,
+  userId,
+  isClientAdmin,
 }: {
-  client_id: string;
-  user_id: string;
-  is_client_admin: boolean;
+  clientId: string;
+  userId: string;
+  isClientAdmin: boolean;
 }) {
-  return request.put(`/admin/client/${encodeURIComponent(client_id)}/admin`, {
-    user_id,
-    is_client_admin,
+  return request.put(`/admin/client/${encodeURIComponent(clientId)}/admin`, {
+    userId,
+    isClientAdmin,
   });
 }

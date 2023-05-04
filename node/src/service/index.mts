@@ -10,16 +10,16 @@ export async function checkMyClientAdmin(session: SessionInfo) {
 export async function checkClientAdmin(clientId: string, userId: string) {
   const client2User = await prismaClient.client2User.findUnique({
     where: {
-      client_id_user_id: {
-        client_id: clientId,
-        user_id: userId,
+      clientId_userId: {
+        clientId,
+        userId,
       },
     },
     select: {
-      is_client_admin: true,
+      isClientAdmin: true,
     },
   });
-  return !!(client2User && client2User.is_client_admin);
+  return !!(client2User && client2User.isClientAdmin);
 }
 
 export interface SessionInfo {

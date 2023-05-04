@@ -16,7 +16,7 @@
       </NCol>
       <div style="flex: 1"></div>
       <NButton
-        :disabled="!userinfo.is_client_admin"
+        :disabled="!userinfo.isClientAdmin"
         @click="() => createUserViewRef?.open()"
       >
         Create

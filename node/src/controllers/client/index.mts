@@ -24,15 +24,15 @@ export class ClientController {
     id: true,
     desc: true,
     type: true,
-    updated_at: true,
-    created_at: true,
+    updatedAt: true,
+    createdAt: true,
   };
   @Post()
   async create(
     @Body()
     @Required()
     @Required('secret')
-    @Required('redirect_uris')
+    @Required('redirectUris')
     client: Client,
     @Session() session: SessionInfo
   ) {
@@ -103,7 +103,7 @@ export class ClientController {
       select: {
         ...this.select,
         secret: true,
-        redirect_uris: true,
+        redirectUris: true,
       },
     });
   }
@@ -126,8 +126,8 @@ export class ClientController {
       : {
           client2UserArr: {
             some: {
-              user_id: session.token_info.user_id,
-              is_client_admin: true,
+              userId: session.token_info.user_id,
+              isClientAdmin: true,
             },
           },
         };
@@ -205,54 +205,54 @@ export class ClientController {
       });
     }
     return await prismaClient.$transaction([
-      ...userIds.map((user_id) =>
+      ...userIds.map((userId) =>
         prismaClient.client2User.upsert({
           where: {
-            client_id_user_id: {
-              user_id,
-              client_id: clientId,
+            clientId_userId: {
+              userId,
+              clientId,
             },
           },
-          create: { user_id, client_id: clientId },
-          update: { user_id, client_id: clientId },
+          create: { userId, clientId },
+          update: { userId, clientId },
         })
       ),
     ]);
   }
 
-  @Put(':client_id/admin')
+  @Put(':clientId/admin')
   async setClientAdmin(
-    @Param('client_id') @Required() client_id: string,
-    @Body('user_id') @Required() user_id: string,
-    @Body('is_client_admin') @Required() is_client_admin: boolean,
+    @Param('clientId') @Required() clientId: string,
+    @Body('userId') @Required() userId: string,
+    @Body('isClientAdmin') @Required() isClientAdmin: boolean,
     @Session() session: SessionInfo
   ) {
-    const isClientAdmin = await checkClientAdmin(
-      client_id,
+    const isClientAdmin_ = await checkClientAdmin(
+      clientId,
       session.token_info.user_id
     );
-    if (!isClientAdmin) {
+    if (!isClientAdmin_) {
       throw new ResponseError({
         error: 'no permission',
       });
     }
     return prismaClient.client2User.update({
       where: {
-        client_id_user_id: {
-          client_id,
-          user_id,
+        clientId_userId: {
+          clientId,
+          userId,
         },
       },
       data: {
-        is_client_admin,
+        isClientAdmin,
       },
     });
   }
 
-  @Delete(':id/user/:user_id')
+  @Delete(':clientId/user/:userId')
   async deleteClientUser(
-    @Param('id') @Required() clientId: string,
-    @Param('user_id') @Required() userId: string,
+    @Param('clientId') @Required() clientId: string,
+    @Param('userId') @Required() userId: string,
     @Session() session: SessionInfo
   ) {
     const isClientAdmin = await checkClientAdmin(
@@ -272,17 +272,17 @@ export class ClientController {
     }
     return prismaClient.client2User.delete({
       where: {
-        client_id_user_id: {
-          client_id: clientId,
-          user_id: userId,
+        clientId_userId: {
+          clientId,
+          userId,
         },
       },
     });
   }
 
-  @Get(':id/user')
+  @Get(':clientId/user')
   async getClientUsers(
-    @Param('id') @Required() id: string,
+    @Param('clientId') @Required() clientId: string,
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
     @Query('search') search = ''
@@ -290,7 +290,7 @@ export class ClientController {
     page = Number(page);
     pageSize = Number(pageSize);
     const where = {
-      client_id: id,
+      clientId,
       OR: [
         {
           user: {
@@ -321,8 +321,8 @@ export class ClientController {
       where,
       select: {
         user: true,
-        is_client_admin: true,
-        expires_at: true,
+        isClientAdmin: true,
+        expiresAt: true,
       },
     });
     const total = await prismaClient.client2User.count({

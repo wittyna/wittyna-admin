@@ -19,11 +19,7 @@
 <script lang="ts" setup>
 import { PrismOutline, PersonOutline } from '@vicons/ionicons5';
 import { userinfo } from '../../main';
-function logout() {
-  location.href = `/admin/logout?redirect_uri=${encodeURIComponent(
-    location.href
-  )}`;
-}
+import { logout } from '../../util';
 </script>
 
 <style scoped lang="scss">

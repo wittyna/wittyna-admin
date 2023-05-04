@@ -9,7 +9,7 @@ export const CONFIG = {
       secret: '42ea9BE#',
       desc: 'admin',
       type: ClientType.SYSTEM,
-      redirect_uris: [
+      redirectUris: [
         // 用于本地直接起服务调试。
         'http://127.0.0.1:5566/admin/authorize',
         'https://admin.wittyna.com/admin/authorize',
@@ -20,7 +20,7 @@ export const CONFIG = {
       secret: '42ea9BE#',
       desc: 'tool-of-nana',
       type: ClientType.OFFICIAL,
-      redirect_uris: [
+      redirectUris: [
         'https://tool.wittyna.com/tool/authorize',
         // 用于ui界面调试。
         'http://127.0.0.1:3000/tool/authorize',
@@ -47,29 +47,29 @@ export const CONFIG = {
   ],
   client2UserArr: [
     {
-      client_id: 'admin',
-      user_id: 'admin',
-      is_client_admin: true,
+      clientId: 'admin',
+      userId: 'admin',
+      isClientAdmin: true,
     },
     {
-      client_id: 'admin',
-      user_id: 'baixiyang',
-      is_client_admin: true,
+      clientId: 'admin',
+      userId: 'baixiyang',
+      isClientAdmin: true,
     },
     {
-      client_id: 'tool-of-nana',
-      user_id: 'baixiyang',
-      is_client_admin: true,
+      clientId: 'tool-of-nana',
+      userId: 'baixiyang',
+      isClientAdmin: true,
     },
     {
-      client_id: 'tool-of-nana',
-      user_id: 'rona',
-      is_client_admin: true,
+      clientId: 'tool-of-nana',
+      userId: 'rona',
+      isClientAdmin: true,
     },
     {
-      client_id: 'admin',
-      user_id: 'rona',
-      is_client_admin: false,
+      clientId: 'admin',
+      userId: 'rona',
+      isClientAdmin: false,
     },
   ],
   redis: {

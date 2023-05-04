@@ -5,16 +5,16 @@ export interface Client {
   desc: string;
   secret?: string;
   type: ClientType;
-  redirect_uris: string[];
-  created_at?: string;
-  updated_at?: string;
+  redirectUris: string[];
+  createdAt?: string;
+  updatedAt?: string;
   users?: User[];
 }
 
 export interface ClientView extends Client {
   id: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export enum ClientType {

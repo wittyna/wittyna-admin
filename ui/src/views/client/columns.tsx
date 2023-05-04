@@ -29,18 +29,18 @@ export const useColumns: (
     },
     {
       title: 'Created at',
-      key: 'created_at',
+      key: 'createdAt',
       width: 200,
       render(row) {
-        return formatDate(row.created_at);
+        return formatDate(row.createdAt);
       },
     },
     {
       title: 'Updated at',
-      key: 'updated_at',
+      key: 'updatedAt',
       width: 200,
       render(row) {
-        return formatDate(row.updated_at);
+        return formatDate(row.updatedAt);
       },
     },
     {

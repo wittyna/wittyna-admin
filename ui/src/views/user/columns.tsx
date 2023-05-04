@@ -33,18 +33,18 @@ export const useColumns: (
     },
     {
       title: 'Created at',
-      key: 'created_at',
+      key: 'createdAt',
       width: 200,
       render(row) {
-        return formatDate(row.created_at);
+        return formatDate(row.createdAt);
       },
     },
     {
       title: 'Updated at',
-      key: 'updated_at',
+      key: 'updatedAt',
       width: 200,
       render(row) {
-        return formatDate(row.updated_at);
+        return formatDate(row.updatedAt);
       },
     },
     {
@@ -55,7 +55,7 @@ export const useColumns: (
         return (
           <NSpace>
             <NButton
-              disabled={!userinfo.is_client_admin}
+              disabled={!userinfo.isClientAdmin}
               text
               type="info"
               onClick={() => onEdit(row.id)}
@@ -66,11 +66,7 @@ export const useColumns: (
               onPositiveClick={() => onDeleteHandler(row.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton
-                    text
-                    type="error"
-                    disabled={!userinfo.is_client_admin}
-                  >
+                  <NButton text type="error" disabled={!userinfo.isClientAdmin}>
                     Delete
                   </NButton>
                 ),

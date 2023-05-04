@@ -4,16 +4,15 @@ export interface User {
   id: string;
   username: string;
   password: string;
-  is_system_admin: boolean;
   email: string;
   phone: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   clients?: Client[];
 }
 
 export interface UserView extends User {
   id: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }

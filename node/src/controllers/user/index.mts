@@ -13,7 +13,6 @@ import {
 } from 'wittyna';
 import { prismaClient } from '../../index.mjs';
 import { User } from '@prisma/client';
-import { Context } from 'koa';
 import { checkMyClientAdmin, SessionInfo } from '../../service/index.mjs';
 
 @Controller('user')
@@ -23,8 +22,8 @@ export class UserController {
     username: true,
     email: true,
     phone: true,
-    updated_at: true,
-    created_at: true,
+    updatedAt: true,
+    createdAt: true,
   };
   @Post()
   async createUser(
@@ -124,9 +123,9 @@ export class UserController {
       rows,
     };
   }
-  @Delete(':id')
+  @Delete(':userId')
   async delete(
-    @Param('id') @Required() id: string,
+    @Param('userId') @Required() userId: string,
     @Session() session: SessionInfo
   ) {
     if (!(await checkMyClientAdmin(session))) {
@@ -136,9 +135,9 @@ export class UserController {
     }
     const users = await prismaClient.client2User.findMany({
       where: {
-        client_id: session.token_info.client_id,
-        user_id: id,
-        is_client_admin: true,
+        clientId: session.token_info.client_id,
+        userId,
+        isClientAdmin: true,
       },
     });
     // 不能删除管理员
@@ -149,7 +148,7 @@ export class UserController {
     }
     return prismaClient.user.delete({
       where: {
-        id: id,
+        id: userId,
       },
       select: this.select,
     });

@@ -27,9 +27,9 @@ export async function init() {
     ...client2UserArr.map((client2User) =>
       prismaClient.client2User.upsert({
         where: {
-          client_id_user_id: {
-            client_id: client2User.client_id,
-            user_id: client2User.user_id,
+          clientId_userId: {
+            clientId: client2User.clientId,
+            userId: client2User.userId,
           },
         },
         create: client2User,

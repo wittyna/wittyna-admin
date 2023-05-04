@@ -34,20 +34,20 @@ export const useColumns: (
     },
     {
       title: 'Is client admin',
-      key: 'is_client_admin',
+      key: 'isClientAdmin',
       width: 200,
       render(row) {
         return (
           <NSwitch
-            value={row.is_client_admin}
+            value={row.isClientAdmin}
             onUpdate:value={async (v) => {
               await setClientAdmin({
-                user_id: row.user.id,
-                client_id: clientId.value,
-                is_client_admin: v,
+                userId: row.user.id,
+                clientId: clientId.value,
+                isClientAdmin: v,
               });
               message.success('Update success');
-              row.is_client_admin = v;
+              row.isClientAdmin = v;
             }}
           ></NSwitch>
         );
@@ -64,7 +64,7 @@ export const useColumns: (
               onPositiveClick={() => onRemoveHandler(row.user.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton text type="error" disabled={row.is_client_admin}>
+                  <NButton text type="error" disabled={row.isClientAdmin}>
                     Remove
                   </NButton>
                 ),
