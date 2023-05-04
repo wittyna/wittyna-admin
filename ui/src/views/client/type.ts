@@ -1,4 +1,3 @@
-import { ClientType } from '@prisma/client';
 import { User } from '../user/type';
 
 export interface Client {
@@ -16,4 +15,10 @@ export interface ClientView extends Client {
   id: string;
   created_at: string;
   updated_at: string;
+}
+
+export enum ClientType {
+  SYSTEM = 'SYSTEM',
+  OFFICIAL = 'OFFICIAL',
+  THREE_PART = 'THREE_PART',
 }

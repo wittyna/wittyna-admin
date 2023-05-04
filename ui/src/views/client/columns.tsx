@@ -1,8 +1,7 @@
 import { DataTableColumns } from 'naive-ui';
-import { ClientView } from './type';
+import { ClientView, ClientType } from './type';
 import { formatDate } from '../../util/date';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
-import { ClientType } from '@prisma/client';
 import { deleteClient } from './service';
 import { message } from '../../util';
 

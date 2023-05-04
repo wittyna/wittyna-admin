@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
-import { Client } from './type';
-import { ClientType } from '@prisma/client';
+import { Client, ClientType } from './type';
 import { FormRules, FormInst } from 'naive-ui';
 import { upsertClient, getClient } from './service';
 import { message } from '../../util';
