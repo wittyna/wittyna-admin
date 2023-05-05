@@ -1,17 +1,27 @@
-import { DataTableColumns, NSwitch } from 'naive-ui';
+import {
+  DataTableColumns,
+  NDatePicker,
+  NPopover,
+  NSwitch,
+  NTooltip,
+} from 'naive-ui';
 import { Client2User, User } from '@prisma/client';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
-import { removeClientUser, setClientAdmin } from '../service';
+import {
+  removeClientUser,
+  setClientAdmin,
+  setClientUserExpiresAt,
+} from '../service';
 import { message } from '../../../util';
-import { formatDate2 } from '../../../util/date';
+import { formatDate } from '../../../util/date';
+import { defineComponent, ref } from 'vue';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
   clientId: Ref<string>
-) => DataTableColumns<Client2User & { user: User; expiresAt: string }> = (
-  refresh,
-  clientId
-) => {
+) => DataTableColumns<
+  Omit<Client2User, 'expiresAt'> & { user: User; expiresAt: string }
+> = (refresh, clientId) => {
   async function onRemoveHandler(userId: string) {
     await removeClientUser({
       userId,
@@ -41,7 +51,24 @@ export const useColumns: (
       key: 'expiresAt',
       width: 300,
       render(row) {
-        return row.expiresAt ? formatDate2(row.expiresAt) : '';
+        return (
+          <>
+            {row.expiresAt ? formatDate(row.expiresAt) : ''}
+            &nbsp;&nbsp;
+            <ConfirmDatetime
+              defaultValue={row.expiresAt}
+              onConfirm={async (v: string) => {
+                await setClientUserExpiresAt({
+                  userId: row.user.id,
+                  clientId: clientId.value,
+                  expiresAt: v,
+                });
+                message.success('Update success');
+                row.expiresAt = v;
+              }}
+            ></ConfirmDatetime>
+          </>
+        );
       },
     },
     {
@@ -50,18 +77,24 @@ export const useColumns: (
       width: 200,
       render(row) {
         return (
-          <NSwitch
-            value={row.isClientAdmin}
-            onUpdate:value={async (v) => {
+          <NPopconfirm
+            onPositiveClick={async () => {
               await setClientAdmin({
                 userId: row.user.id,
                 clientId: clientId.value,
-                isClientAdmin: v,
+                isClientAdmin: !row.isClientAdmin,
               });
               message.success('Update success');
-              row.isClientAdmin = v;
+              row.isClientAdmin = !row.isClientAdmin;
             }}
-          ></NSwitch>
+            v-slots={{
+              trigger: () => <NSwitch value={row.isClientAdmin}></NSwitch>,
+            }}
+          >
+            {row.isClientAdmin
+              ? 'Are you sure to unset client admin?'
+              : 'Are you sure to set client admin?'}
+          </NPopconfirm>
         );
       },
     },
@@ -90,3 +123,40 @@ export const useColumns: (
     },
   ];
 };
+
+const ConfirmDatetime = defineComponent({
+  props: {
+    onConfirm: { type: Function, required: true },
+    defaultValue: { type: String, required: true },
+  },
+  setup(props) {
+    const show = ref(false);
+    return () => (
+      <NPopover
+        show={show.value}
+        onUpdate:show={(v) => {
+          show.value = v;
+        }}
+        placement="top"
+        trigger="click"
+        v-slots={{
+          trigger: () => (
+            <NButton text type="primary">
+              Set
+            </NButton>
+          ),
+        }}
+      >
+        <NDatePicker
+          panel
+          type="datetime"
+          defaultValue={new Date(props.defaultValue).getTime()}
+          onConfirm={(v) => {
+            props.onConfirm(new Date(v).toISOString());
+            show.value = false;
+          }}
+        ></NDatePicker>
+      </NPopover>
+    );
+  },
+});

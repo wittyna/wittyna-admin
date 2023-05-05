@@ -9,7 +9,7 @@ export function formatDate(dateString: string) {
   }).format(new Date(dateString));
 }
 
-export function formatDate2(dateString: string) {
+export function formatDate2(dateString: string | number) {
   return Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
     month: '2-digit',

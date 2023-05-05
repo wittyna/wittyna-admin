@@ -339,4 +339,38 @@ export class ClientController {
       rows,
     };
   }
+  @Put(':clientId/user/:userId/expires-at/:expiresAt')
+  async set(
+    @Param('clientId') @Required() clientId: string,
+    @Param('userId') @Required() userId: string,
+    @Param('expiresAt') @Required() expiresAt: string,
+    @Session() session: SessionInfo
+  ) {
+    const isClientAdmin_ = await checkClientAdmin(
+      clientId,
+      session.tokenInfo.userId
+    );
+    if (!isClientAdmin_) {
+      throw new ResponseError({
+        error: 'no permission',
+      });
+    }
+
+    if (new Date(expiresAt).getTime() < new Date().getTime() + 1000 * 60 * 60) {
+      throw new ResponseError({
+        error: 'Expires-at must be greater than 1 hour',
+      });
+    }
+    return prismaClient.client2User.update({
+      where: {
+        clientId_userId: {
+          clientId,
+          userId,
+        },
+      },
+      data: {
+        expiresAt: new Date(expiresAt),
+      },
+    });
+  }
 }

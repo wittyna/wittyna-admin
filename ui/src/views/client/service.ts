@@ -90,3 +90,19 @@ export async function setClientAdmin({
     isClientAdmin,
   });
 }
+
+export async function setClientUserExpiresAt({
+  clientId,
+  userId,
+  expiresAt,
+}: {
+  clientId: string;
+  userId: string;
+  expiresAt: string;
+}) {
+  return request.put(
+    `/admin/client/${encodeURIComponent(clientId)}/user/${encodeURIComponent(
+      userId
+    )}/expires-at/${encodeURIComponent(expiresAt)}`
+  );
+}
