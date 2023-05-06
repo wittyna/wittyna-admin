@@ -20,17 +20,22 @@ export const useColumns: (
     {
       title: 'Id',
       key: 'id',
-      width: 200,
+      width: 300,
     },
     {
       title: 'Type',
       key: 'type',
-      width: 100,
+      width: 120,
+    },
+    {
+      title: 'Desc',
+      key: 'desc',
+      width: 300,
     },
     {
       title: 'Created at',
       key: 'createdAt',
-      width: 200,
+      width: 150,
       render(row) {
         return formatDate(row.createdAt);
       },
@@ -42,11 +47,6 @@ export const useColumns: (
       render(row) {
         return formatDate(row.updatedAt);
       },
-    },
-    {
-      title: 'Desc',
-      key: 'desc',
-      width: 350,
     },
     {
       title: 'Actions',

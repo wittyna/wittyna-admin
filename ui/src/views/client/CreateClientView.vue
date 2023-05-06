@@ -98,7 +98,7 @@ function init(client?: Client) {
     secret: '',
     desc: '',
     type: ClientType.THREE_PART,
-    redirect_uris: [],
+    redirectUris: [],
   });
   if (client) {
     Object.assign(model, client);
@@ -117,8 +117,13 @@ function init(client?: Client) {
         :model="model"
         :rules="rules"
       >
-        <NFormItem label="desc" path="desc">
-          <NInput v-model:value="model.desc" maxlength="256" />
+        <NFormItem label="id" path="id">
+          <NInput
+            :value="model.id"
+            maxlength="256"
+            placeholder="auto create"
+            readonly
+          />
         </NFormItem>
         <NFormItem label="secret" path="secret">
           <NInput
@@ -127,6 +132,9 @@ function init(client?: Client) {
             showPasswordOn="mousedown"
             maxlength="16"
           />
+        </NFormItem>
+        <NFormItem label="desc" path="desc">
+          <NInput v-model:value="model.desc" maxlength="256" />
         </NFormItem>
         <NFormItem label="type" path="type">
           <NSelect v-model:value="model.type" :options="typeOptions" />

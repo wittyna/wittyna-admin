@@ -4,6 +4,10 @@ import { User } from './type';
 import { FormRules, FormInst } from 'naive-ui';
 import { upsertUser, getUser } from './service';
 import { message } from '../../util';
+import { generatePassword } from '../../util/password';
+import { CopyOutline } from '@vicons/ionicons5';
+import { copyToClipboard } from '../../util/copy';
+import { assignWith } from 'lodash-es';
 
 const formRef = ref<FormInst>();
 
@@ -27,6 +31,8 @@ defineExpose({
       }
     } else {
       isEdit.value = false;
+      model.password = generatePassword();
+      message.info('Password has been regenerated!');
     }
     loading.value = false;
   },
@@ -37,7 +43,7 @@ const emit = defineEmits<{
 }>();
 
 // client reactive
-const model = reactive<User>({} as User);
+const model = reactive<Partial<User>>({} as Partial<User>);
 init();
 
 const rules = computed<FormRules>(() => ({
@@ -59,7 +65,7 @@ async function upsertUser_() {
   await formRef.value!.validate();
   commitLoading.value = true;
   try {
-    await upsertUser(model);
+    await upsertUser(model as User);
     show.value = false;
     emit('success');
     if (model.id) {
@@ -73,6 +79,8 @@ async function upsertUser_() {
 }
 
 function init(user?: User) {
+  isEditPassword.value = false;
+
   Object.assign(model, {
     username: '',
     password: '',
@@ -113,7 +121,13 @@ function init(user?: User) {
               style="margin-left: 8px"
               text
               type="primary"
-              @click="isEditPassword = true"
+              @click="
+                () => {
+                  model.password = generatePassword();
+                  isEditPassword = true;
+                  message.info('Password has been regenerated!');
+                }
+              "
               >Change</NButton
             >
             <NButton
@@ -121,10 +135,31 @@ function init(user?: User) {
               style="margin-left: 8px"
               text
               type="primary"
-              @click="isEditPassword = false"
+              @click="
+                () => {
+                  delete model.password;
+                  message.info('Password has been restored');
+                  isEditPassword = false;
+                }
+              "
               >Cancel</NButton
             >
           </template>
+          <NButton
+            v-if="showPassword"
+            quaternary
+            type="primary"
+            @click="
+              async () => {
+                await copyToClipboard(model.password);
+                message.success('Copied!');
+              }
+            "
+          >
+            <template #icon>
+              <NIcon><CopyOutline /></NIcon>
+            </template>
+          </NButton>
         </NFormItem>
         <NFormItem label="email" path="email">
           <NInput v-model:value="model.email" maxlength="64" />
