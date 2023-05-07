@@ -14,7 +14,7 @@ import {
 } from '../service';
 import { message } from '../../../util';
 import { formatDate } from '../../../util/date';
-import { defineComponent, ref } from 'vue';
+import { Component, defineComponent, ref } from 'vue';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
@@ -35,16 +35,34 @@ export const useColumns: (
       title: 'Username',
       key: 'user.username',
       width: 150,
+      render(row) {
+        if (row.expiresAt && Date.now() > new Date(row.expiresAt).getTime()) {
+          return <ExpiredStyle>{row.user?.username}</ExpiredStyle>;
+        }
+        return row.user.username;
+      },
     },
     {
       title: 'Email',
       key: 'user.email',
       width: 200,
+      render(row) {
+        if (row.expiresAt && Date.now() > new Date(row.expiresAt).getTime()) {
+          return <ExpiredStyle>{row.user?.email}</ExpiredStyle>;
+        }
+        return row.user.username;
+      },
     },
     {
       title: 'Phone',
       key: 'user.phone',
       width: 150,
+      render(row) {
+        if (row.expiresAt && Date.now() > new Date(row.expiresAt).getTime()) {
+          return <ExpiredStyle>{row.user?.phone}</ExpiredStyle>;
+        }
+        return row.user.username;
+      },
     },
     {
       title: 'Expires at',
@@ -55,7 +73,7 @@ export const useColumns: (
           <>
             {row.expiresAt ? (
               Date.now() > new Date(row.expiresAt).getTime() ? (
-                <span style="color: rgb(51, 54, 57, 0.6)">Expired</span>
+                <ExpiredStyle>Expired</ExpiredStyle>
               ) : (
                 formatDate(row.expiresAt)
               )
@@ -171,6 +189,14 @@ const ConfirmDatetime = defineComponent({
           }}
         ></NDatePicker>
       </NPopover>
+    );
+  },
+});
+
+const ExpiredStyle = defineComponent({
+  setup(props, { slots }) {
+    return () => (
+      <span style="color: rgb(51, 54, 57, 0.6)">{slots.default?.()}</span>
     );
   },
 });
