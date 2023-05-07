@@ -49,7 +49,7 @@ export const useColumns: (
     {
       title: 'Expires at',
       key: 'expiresAt',
-      width: 300,
+      width: 200,
       render(row) {
         return (
           <>
@@ -74,7 +74,7 @@ export const useColumns: (
     {
       title: 'Is client admin',
       key: 'isClientAdmin',
-      width: 200,
+      width: 150,
       render(row) {
         return (
           <NPopconfirm
@@ -148,11 +148,17 @@ const ConfirmDatetime = defineComponent({
         }}
       >
         <NDatePicker
+          actions={['clear', 'now', 'confirm']}
           panel
           type="datetime"
-          defaultValue={new Date(props.defaultValue).getTime()}
+          default-time="23:59:59"
+          defaultValue={new Date(props.defaultValue).getTime() || undefined}
           onConfirm={(v) => {
-            props.onConfirm(new Date(v).toISOString());
+            if (v === null) {
+              props.onConfirm(v);
+            } else {
+              props.onConfirm(new Date(v).toISOString());
+            }
             show.value = false;
           }}
         ></NDatePicker>

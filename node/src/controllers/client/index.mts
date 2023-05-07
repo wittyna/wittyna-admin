@@ -356,6 +356,19 @@ export class ClientController {
       });
     }
 
+    if (expiresAt === 'null') {
+      return prismaClient.client2User.update({
+        where: {
+          clientId_userId: {
+            clientId,
+            userId,
+          },
+        },
+        data: {
+          expiresAt: null,
+        },
+      });
+    }
     if (new Date(expiresAt).getTime() < new Date().getTime() + 1000 * 60 * 60) {
       throw new ResponseError({
         error: 'Expires-at must be greater than 1 hour',
