@@ -9,6 +9,10 @@ request.interceptors.response.use(
     return res.data;
   },
   (error: any) => {
+    if (error?.response?.status === 401) {
+      location.href = error?.response?.data?.redirect_uri;
+      return;
+    }
     if (error?.response?.data?.error) {
       message.error(
         error.response.data.error_description || error.response.data.error

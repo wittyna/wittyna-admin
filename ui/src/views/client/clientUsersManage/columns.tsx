@@ -163,7 +163,7 @@ const ConfirmDatetime = defineComponent({
         onUpdate:show={(v) => {
           show.value = v;
         }}
-        placement="top"
+        placement="left"
         trigger="click"
         v-slots={{
           trigger: () => (
