@@ -369,11 +369,11 @@ export class ClientController {
         },
       });
     }
-    if (new Date(expiresAt).getTime() < new Date().getTime() + 1000 * 60 * 60) {
-      throw new ResponseError({
-        error: 'Expires-at must be greater than 1 hour',
-      });
-    }
+    // if (new Date(expiresAt).getTime() < new Date().getTime() + 1000 * 60 * 60) {
+    //   throw new ResponseError({
+    //     error: 'Expires-at must be greater than 1 hour',
+    //   });
+    // }
     return prismaClient.client2User.update({
       where: {
         clientId_userId: {

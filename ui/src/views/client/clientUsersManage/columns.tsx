@@ -53,7 +53,15 @@ export const useColumns: (
       render(row) {
         return (
           <>
-            {row.expiresAt ? formatDate(row.expiresAt) : ''}
+            {row.expiresAt ? (
+              Date.now() > new Date(row.expiresAt).getTime() ? (
+                <span style="color: rgb(51, 54, 57, 0.6)">Expired</span>
+              ) : (
+                formatDate(row.expiresAt)
+              )
+            ) : (
+              ''
+            )}
             &nbsp;&nbsp;
             <ConfirmDatetime
               defaultValue={row.expiresAt}
