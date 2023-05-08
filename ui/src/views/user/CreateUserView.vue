@@ -7,7 +7,6 @@ import { message } from '../../util';
 import { generatePassword } from '../../util/password';
 import { CopyOutline } from '@vicons/ionicons5';
 import { copyToClipboard } from '../../util/copy';
-import { assignWith } from 'lodash-es';
 
 const formRef = ref<FormInst>();
 
@@ -151,7 +150,7 @@ function init(user?: User) {
             type="primary"
             @click="
               async () => {
-                await copyToClipboard(model.password);
+                await copyToClipboard(model.password as string);
                 message.success('Copied!');
               }
             "
