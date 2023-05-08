@@ -19,6 +19,24 @@ export const getUserList = ({
     },
   });
 
+export const getAllUserList = ({
+  page,
+  pageSize,
+  search,
+}: {
+  page: number;
+  pageSize: number;
+  search: string;
+}): Promise<ListResponse<User>> =>
+  request.get('/admin/user', {
+    params: {
+      page,
+      pageSize,
+      search,
+      all: true,
+    },
+  });
+
 export const getUser = (id: string): Promise<User> =>
   request.get(`/admin/user/${encodeURIComponent(id)}`);
 

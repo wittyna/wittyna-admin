@@ -54,19 +54,14 @@ export const useColumns: (
       render(row) {
         return (
           <NSpace>
-            <NButton
-              disabled={!userinfo.isClientAdmin}
-              text
-              type="info"
-              onClick={() => onEdit(row.id)}
-            >
+            <NButton text type="info" onClick={() => onEdit(row.id)}>
               Edit
             </NButton>
             <NPopconfirm
               onPositiveClick={() => onDeleteHandler(row.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton text type="error" disabled={!userinfo.isClientAdmin}>
+                  <NButton text type="error">
                     Delete
                   </NButton>
                 ),

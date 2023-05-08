@@ -1,20 +1,10 @@
-import {
-  DataTableColumns,
-  NDatePicker,
-  NPopover,
-  NSwitch,
-  NTooltip,
-} from 'naive-ui';
+import { DataTableColumns, NDatePicker, NPopover } from 'naive-ui';
 import { Client2User, User } from '@prisma/client';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
-import {
-  removeClientUser,
-  setClientAdmin,
-  setClientUserExpiresAt,
-} from '../service';
+import { removeClientUser, setClientUserExpiresAt } from '../service';
 import { message } from '../../../util';
 import { formatDate } from '../../../util/date';
-import { Component, defineComponent, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
@@ -98,33 +88,6 @@ export const useColumns: (
       },
     },
     {
-      title: 'Is client admin',
-      key: 'isClientAdmin',
-      width: 150,
-      render(row) {
-        return (
-          <NPopconfirm
-            onPositiveClick={async () => {
-              await setClientAdmin({
-                userId: row.user.id,
-                clientId: clientId.value,
-                isClientAdmin: !row.isClientAdmin,
-              });
-              message.success('Update success');
-              row.isClientAdmin = !row.isClientAdmin;
-            }}
-            v-slots={{
-              trigger: () => <NSwitch value={row.isClientAdmin}></NSwitch>,
-            }}
-          >
-            {row.isClientAdmin
-              ? 'Are you sure to unset client admin?'
-              : 'Are you sure to set client admin?'}
-          </NPopconfirm>
-        );
-      },
-    },
-    {
       title: 'actions',
       key: 'actions',
       width: 200,
@@ -135,7 +98,7 @@ export const useColumns: (
               onPositiveClick={() => onRemoveHandler(row.user.id)}
               v-slots={{
                 trigger: () => (
-                  <NButton text type="error" disabled={row.isClientAdmin}>
+                  <NButton text type="error">
                     Remove
                   </NButton>
                 ),

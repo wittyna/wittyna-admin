@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-import { getUserList } from '../../user/service';
+import { getAllUserList, getUserList } from '../../user/service';
 import { SearchOutline } from '@vicons/ionicons5';
 import { DataTableColumns, PaginationProps, DataTableRowKey } from 'naive-ui';
 import { UserView } from '../../user/type';
@@ -50,7 +50,7 @@ function rowKey(rowData: { id: string }) {
 async function query() {
   loading.value = true;
   try {
-    const { rows, total, pageCount } = await getUserList({
+    const { rows, total, pageCount } = await getAllUserList({
       page: page.value,
       pageSize: pageSize.value,
       search: searchConfirm.value,

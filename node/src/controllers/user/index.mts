@@ -12,8 +12,12 @@ import {
   Session,
 } from 'wittyna';
 import { prismaClient } from '../../index.mjs';
-import { User } from '@prisma/client';
-import { checkMyClientAdmin, SessionInfo } from '../../service/index.mjs';
+import { PrismaClient, User } from '@prisma/client';
+import {
+  checkSystemAdmin,
+  checkUserAuth,
+  SessionInfo,
+} from '../../service/index.mjs';
 import { sha256 } from '../../utils/encrypt.mjs';
 
 @Controller('user')
@@ -31,12 +35,9 @@ export class UserController {
     @Body() @Required() @Required('password') user: User,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
-      throw new ResponseError({
-        error: 'no permission',
-      });
-    }
     user.password = sha256(user.password);
+    user.isSystemAdmin = false;
+    user.creatorId = session.tokenInfo.userId;
     return prismaClient.user.create({
       data: user,
       select: this.select,
@@ -47,9 +48,9 @@ export class UserController {
     @Body() @Required() @Required('id') user: Partial<User>,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
+    if (!(await checkUserAuth(session, user.id!))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
     if (user.password) {
@@ -68,9 +69,9 @@ export class UserController {
     @Param('id') @Required() id: string,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
+    if (!(await checkUserAuth(session, id))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
 
@@ -87,31 +88,54 @@ export class UserController {
   async getList(
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
-    @Query('search') search = ''
+    @Query('search') search = '',
+    @Query('all') all = 'false',
+    @Session() session: SessionInfo
   ) {
     page = Number(page);
     pageSize = Number(pageSize);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    type Where = Parameters<PrismaClient['user']['findMany']>[0]['where'];
+    const where_: Where =
+      all === 'true' || (await checkSystemAdmin(session))
+        ? {}
+        : {
+            OR: [
+              {
+                creatorId: session.tokenInfo.userId,
+              },
+              {
+                id: session.tokenInfo.userId,
+              },
+            ],
+          };
     const where = search
       ? {
-          OR: [
+          AND: [
+            where_,
             {
-              email: {
-                contains: search,
-              },
-            },
-            {
-              username: {
-                contains: search,
-              },
-            },
-            {
-              phone: {
-                contains: search,
-              },
+              OR: [
+                {
+                  email: {
+                    contains: search,
+                  },
+                },
+                {
+                  username: {
+                    contains: search,
+                  },
+                },
+                {
+                  phone: {
+                    contains: search,
+                  },
+                },
+              ],
             },
           ],
         }
-      : undefined;
+      : where_;
     const rows = await prismaClient.user.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -132,22 +156,14 @@ export class UserController {
     @Param('userId') @Required() userId: string,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
+    if (!(await checkUserAuth(session, userId))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
-    const users = await prismaClient.client2User.findMany({
-      where: {
-        clientId: session.tokenInfo.clientId,
-        userId,
-        isClientAdmin: true,
-      },
-    });
-    // 不能删除管理员
-    if (users && users.length) {
+    if (userId === session.tokenInfo.userId) {
       throw new ResponseError({
-        error: 'cannot delete admin',
+        error: 'Cannot delete self',
       });
     }
     await prismaClient.client2User.deleteMany({

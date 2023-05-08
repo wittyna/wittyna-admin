@@ -15,12 +15,7 @@
         </NInput>
       </NCol>
       <div style="flex: 1"></div>
-      <NButton
-        :disabled="!userinfo.isClientAdmin"
-        @click="() => createUserViewRef?.open()"
-      >
-        Create
-      </NButton>
+      <NButton @click="() => createUserViewRef?.open()"> Create </NButton>
     </NRow>
     <NDataTable
       ref="tableRef"

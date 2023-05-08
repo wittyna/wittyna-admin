@@ -21,6 +21,7 @@ export const CONFIG = {
       secret: '42ea9BE#',
       desc: 'tool-of-nana',
       type: ClientType.OFFICIAL,
+      creatorId: 'rona',
       redirectUris: [
         'https://tool.wittyna.com/tool/authorize',
         // 用于ui界面调试。
@@ -33,12 +34,14 @@ export const CONFIG = {
       id: 'admin',
       username: 'admin',
       password: sha256('42ea9BE#'),
+      isSystemAdmin: true,
     },
     {
       id: 'baixiyang',
       username: 'baixiyang',
       email: 'baixiyang@outlook.com',
       password: sha256('42ea9BE#'),
+      isSystemAdmin: true,
     },
     {
       id: 'rona',
@@ -50,27 +53,22 @@ export const CONFIG = {
     {
       clientId: 'admin',
       userId: 'admin',
-      isClientAdmin: true,
     },
     {
       clientId: 'admin',
       userId: 'baixiyang',
-      isClientAdmin: true,
     },
     {
       clientId: 'tool-of-nana',
       userId: 'baixiyang',
-      isClientAdmin: true,
     },
     {
       clientId: 'tool-of-nana',
       userId: 'rona',
-      isClientAdmin: true,
     },
     {
       clientId: 'admin',
       userId: 'rona',
-      isClientAdmin: false,
     },
   ],
   redis: {

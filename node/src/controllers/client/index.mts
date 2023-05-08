@@ -14,8 +14,8 @@ import {
 import { prismaClient } from '../../index.mjs';
 import { Client, ClientType, PrismaClient } from '@prisma/client';
 import {
-  checkClientAdmin,
-  checkMyClientAdmin,
+  checkClientAuth,
+  checkSystemAdmin,
   SessionInfo,
 } from '../../service/index.mjs';
 @Controller('client')
@@ -36,35 +36,35 @@ export class ClientController {
     client: Client,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
+    if (client.type === ClientType.SYSTEM || !ClientType[client.type]) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'Invalid client type',
       });
     }
     if (
-      client.type !== ClientType.OFFICIAL &&
+      !(await checkSystemAdmin(session)) &&
       client.type !== ClientType.THREE_PART
     ) {
       throw new ResponseError({
-        error: 'invalid client type',
+        error: 'Invalid client type',
       });
     }
     return prismaClient.client.create({
-      data: client as Client,
+      data: {
+        ...client,
+        creatorId: session.tokenInfo.userId,
+      },
       select: this.select,
     });
   }
   @Put()
   async update(
-    @Body() @Required() @Required('id') client: Client,
+    @Body() @Required() @Required('id') client: Partial<Client>,
     @Session() session: SessionInfo
   ) {
-    if (
-      !(await checkClientAdmin(client.id, session.tokenInfo.userId)) &&
-      !(await checkMyClientAdmin(session))
-    ) {
+    if (!(await checkClientAuth(session, client.id!))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
     if (
@@ -72,9 +72,10 @@ export class ClientController {
       client.type !== ClientType.THREE_PART
     ) {
       throw new ResponseError({
-        error: 'invalid client type',
+        error: 'Invalid client type',
       });
     }
+    delete client.creatorId;
     return prismaClient.client.update({
       where: {
         id: client.id,
@@ -88,12 +89,9 @@ export class ClientController {
     @Param('id') @Required() id: string,
     @Session() session: SessionInfo
   ) {
-    if (
-      !(await checkClientAdmin(id, session.tokenInfo.userId)) &&
-      !(await checkMyClientAdmin(session))
-    ) {
+    if (!(await checkClientAuth(session, id))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
     return prismaClient.client.findUnique({
@@ -102,6 +100,12 @@ export class ClientController {
       },
       select: {
         ...this.select,
+        creator: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
         secret: true,
         redirectUris: true,
       },
@@ -116,7 +120,7 @@ export class ClientController {
   ) {
     page = Number(page);
     pageSize = Number(pageSize);
-    const isSystemAdmin = await checkMyClientAdmin(session);
+    const isSystemAdmin = await checkSystemAdmin(session);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     type Where = Parameters<PrismaClient['client']['findMany']>[0]['where'];
@@ -124,12 +128,7 @@ export class ClientController {
     const where_: Where = isSystemAdmin
       ? {}
       : {
-          client2UserArr: {
-            some: {
-              userId: session.tokenInfo.userId,
-              isClientAdmin: true,
-            },
-          },
+          creatorId: session.tokenInfo.userId,
         };
     const where: Where = search
       ? {
@@ -161,7 +160,15 @@ export class ClientController {
     const rows = await prismaClient.client.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
-      select: this.select,
+      select: {
+        ...this.select,
+        creator: {
+          select: {
+            username: true,
+            id: true,
+          },
+        },
+      },
       where,
     });
     const total = await prismaClient.client.count({
@@ -178,9 +185,9 @@ export class ClientController {
     @Param('clientId') @Required() clientId: string,
     @Session() session: SessionInfo
   ) {
-    if (!(await checkMyClientAdmin(session))) {
+    if (!(await checkClientAuth(session, clientId))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
     await prismaClient.client2User.deleteMany({
@@ -200,13 +207,9 @@ export class ClientController {
     @Body('userIds') @Required() userIds: string[],
     @Session() session: SessionInfo
   ) {
-    const isClientAdmin = await checkClientAdmin(
-      clientId,
-      session.tokenInfo.userId
-    );
-    if (!isClientAdmin) {
+    if (!(await checkClientAuth(session, clientId))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
     return await prismaClient.$transaction([
@@ -225,54 +228,15 @@ export class ClientController {
     ]);
   }
 
-  @Put(':clientId/admin')
-  async setClientAdmin(
-    @Param('clientId') @Required() clientId: string,
-    @Body('userId') @Required() userId: string,
-    @Body('isClientAdmin') @Required() isClientAdmin: boolean,
-    @Session() session: SessionInfo
-  ) {
-    const isClientAdmin_ = await checkClientAdmin(
-      clientId,
-      session.tokenInfo.userId
-    );
-    if (!isClientAdmin_) {
-      throw new ResponseError({
-        error: 'no permission',
-      });
-    }
-    return prismaClient.client2User.update({
-      where: {
-        clientId_userId: {
-          clientId,
-          userId,
-        },
-      },
-      data: {
-        isClientAdmin,
-      },
-    });
-  }
-
   @Delete(':clientId/user/:userId')
   async deleteClientUser(
     @Param('clientId') @Required() clientId: string,
     @Param('userId') @Required() userId: string,
     @Session() session: SessionInfo
   ) {
-    const isClientAdmin = await checkClientAdmin(
-      clientId,
-      session.tokenInfo.userId
-    );
-    if (!isClientAdmin) {
+    if (!(await checkClientAuth(session, clientId))) {
       throw new ResponseError({
-        error: 'no permission',
-      });
-    }
-    const isDeleteClientAdmin = await checkClientAdmin(clientId, userId);
-    if (isDeleteClientAdmin) {
-      throw new ResponseError({
-        error: 'can not delete admin',
+        error: 'No permission',
       });
     }
     return prismaClient.client2User.delete({
@@ -326,7 +290,6 @@ export class ClientController {
       where,
       select: {
         user: true,
-        isClientAdmin: true,
         expiresAt: true,
       },
     });
@@ -346,13 +309,9 @@ export class ClientController {
     @Param('expiresAt') @Required() expiresAt: string,
     @Session() session: SessionInfo
   ) {
-    const isClientAdmin_ = await checkClientAdmin(
-      clientId,
-      session.tokenInfo.userId
-    );
-    if (!isClientAdmin_) {
+    if (!(await checkClientAuth(session, clientId))) {
       throw new ResponseError({
-        error: 'no permission',
+        error: 'No permission',
       });
     }
 
@@ -369,11 +328,6 @@ export class ClientController {
         },
       });
     }
-    // if (new Date(expiresAt).getTime() < new Date().getTime() + 1000 * 60 * 60) {
-    //   throw new ResponseError({
-    //     error: 'Expires-at must be greater than 1 hour',
-    //   });
-    // }
     return prismaClient.client2User.update({
       where: {
         clientId_userId: {
