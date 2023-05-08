@@ -46,7 +46,7 @@ export const CONFIG = {
     {
       id: 'rona',
       username: 'rona',
-      password: sha256('42ea9BE#'),
+      password: sha256('luona0206'),
     },
   ],
   client2UserArr: [
