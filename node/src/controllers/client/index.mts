@@ -16,6 +16,7 @@ import { Client, ClientType, PrismaClient } from '@prisma/client';
 import {
   checkClientAuth,
   checkSystemAdmin,
+  checkUserAuthority,
   SessionInfo,
 } from '../../service/index.mjs';
 @Controller('client')
@@ -26,6 +27,7 @@ export class ClientController {
     type: true,
     updatedAt: true,
     createdAt: true,
+    userAuthorityDesc: true,
   };
   @Post()
   async create(
@@ -49,6 +51,7 @@ export class ClientController {
         error: 'Invalid client type',
       });
     }
+    await checkUserAuthority(session, 'clientLimit', 1);
     return prismaClient.client.create({
       data: {
         ...client,
@@ -201,9 +204,9 @@ export class ClientController {
       },
     });
   }
-  @Post(':id/user')
+  @Post(':clientId/user')
   async addClientUsers(
-    @Param('id') @Required() clientId: string,
+    @Param('clientId') @Required() clientId: string,
     @Body('userIds') @Required() userIds: string[],
     @Session() session: SessionInfo
   ) {
@@ -212,6 +215,12 @@ export class ClientController {
         error: 'No permission',
       });
     }
+    await checkUserAuthority(
+      session,
+      'clientUserLimit',
+      userIds.length,
+      clientId
+    );
     return await prismaClient.$transaction([
       ...userIds.map((userId) =>
         prismaClient.client2User.upsert({
@@ -291,6 +300,7 @@ export class ClientController {
       select: {
         user: true,
         expiresAt: true,
+        authority: true,
       },
     });
     const total = await prismaClient.client2User.count({
@@ -303,7 +313,7 @@ export class ClientController {
     };
   }
   @Put(':clientId/user/:userId/expires-at/:expiresAt')
-  async set(
+  async setExpiresAt(
     @Param('clientId') @Required() clientId: string,
     @Param('userId') @Required() userId: string,
     @Param('expiresAt') @Required() expiresAt: string,
@@ -337,6 +347,45 @@ export class ClientController {
       },
       data: {
         expiresAt: new Date(expiresAt),
+      },
+    });
+  }
+
+  @Put(':clientId/user/:userId/authority/:authority')
+  async setAuthority(
+    @Param('clientId') @Required() clientId: string,
+    @Param('userId') @Required() userId: string,
+    @Param('authority') @Required() authority: string,
+    @Session() session: SessionInfo
+  ) {
+    if (!(await checkClientAuth(session, clientId))) {
+      throw new ResponseError({
+        error: 'No permission',
+      });
+    }
+
+    if (!authority || authority === 'null' || authority === 'undefined') {
+      return prismaClient.client2User.update({
+        where: {
+          clientId_userId: {
+            clientId,
+            userId,
+          },
+        },
+        data: {
+          authority: null,
+        },
+      });
+    }
+    return prismaClient.client2User.update({
+      where: {
+        clientId_userId: {
+          clientId,
+          userId,
+        },
+      },
+      data: {
+        authority,
       },
     });
   }

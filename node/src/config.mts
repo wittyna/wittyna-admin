@@ -10,6 +10,7 @@ export const CONFIG = {
       secret: '42ea9BE#',
       desc: 'admin',
       type: ClientType.SYSTEM,
+      userAuthorityDesc: `userLimit&clientLimit&clientUserLimit`,
       redirectUris: [
         // 用于本地直接起服务调试。
         'http://127.0.0.1:5566/admin/authorize',
@@ -89,3 +90,6 @@ export const CONFIG = {
       : 'https://admin.wittyna.com',
   uiRoot: dirname(new URL(import.meta.url).pathname) + '/ui',
 };
+
+export const CLIENT_ID = CONFIG.clients[0].id;
+export const CLIENT_SECRET = CONFIG.clients[0].secret;

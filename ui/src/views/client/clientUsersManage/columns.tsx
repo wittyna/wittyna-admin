@@ -1,17 +1,23 @@
-import { DataTableColumns, NDatePicker, NPopover } from 'naive-ui';
+import { DataTableColumns, NDatePicker, NInput, NPopover } from 'naive-ui';
 import { Client2User, User } from '@prisma/client';
 import { NButton, NSpace, NPopconfirm } from 'naive-ui';
-import { removeClientUser, setClientUserExpiresAt } from '../service';
+import {
+  removeClientUser,
+  setClientUserAuthority,
+  setClientUserExpiresAt,
+} from '../service';
 import { message } from '../../../util';
 import { formatDate } from '../../../util/date';
 import { defineComponent, ref } from 'vue';
+import { ClientView } from '../type';
 
 export const useColumns: (
   refresh: (flag: boolean) => void,
-  clientId: Ref<string>
+  clientId: Ref<string>,
+  client: Ref<ClientView>
 ) => DataTableColumns<
   Omit<Client2User, 'expiresAt'> & { user: User; expiresAt: string }
-> = (refresh, clientId) => {
+> = (refresh, clientId, client) => {
   async function onRemoveHandler(userId: string) {
     await removeClientUser({
       userId,
@@ -88,9 +94,36 @@ export const useColumns: (
       },
     },
     {
+      title: 'Authority',
+      key: 'Authority',
+      width: 150,
+      render(row) {
+        console.log(client.value, 123);
+        return (
+          <>
+            {row.authority}
+            &nbsp;&nbsp;
+            <ConfirmAuthority
+              onConfirm={async (v: string) => {
+                await setClientUserAuthority({
+                  userId: row.user.id,
+                  clientId: clientId.value,
+                  authority: v,
+                });
+                message.success('Update success');
+                row.authority = v;
+              }}
+              placeholder={client.value.userAuthorityDesc || ''}
+              defaultValue={row.authority || ''}
+            ></ConfirmAuthority>
+          </>
+        );
+      },
+    },
+    {
       title: 'actions',
       key: 'actions',
-      width: 200,
+      width: 80,
       render(row) {
         return (
           <NSpace>
@@ -151,6 +184,58 @@ const ConfirmDatetime = defineComponent({
             show.value = false;
           }}
         ></NDatePicker>
+      </NPopover>
+    );
+  },
+});
+
+// todo
+const ConfirmAuthority = defineComponent({
+  props: {
+    onConfirm: { type: Function, required: true },
+    defaultValue: { type: String, required: true },
+    placeholder: { type: String, required: true },
+  },
+  setup(props) {
+    const show = ref(false);
+    const value = ref(props.defaultValue);
+    return () => (
+      <NPopover
+        show={show.value}
+        onUpdate:show={(v) => {
+          show.value = v;
+        }}
+        placement="left"
+        trigger="click"
+        v-slots={{
+          trigger: () => (
+            <NButton text type="primary">
+              Set
+            </NButton>
+          ),
+        }}
+      >
+        <NInput
+          placeholder={props.placeholder}
+          type="textarea"
+          size="small"
+          value={value.value}
+          onUpdate:value={(v) => {
+            value.value = v;
+          }}
+        ></NInput>
+        <div
+          style={{ display: 'flex', justifyContent: 'end', marginTop: '8px' }}
+        >
+          <NButton
+            onClick={() => {
+              props.onConfirm(value.value);
+              show.value = false;
+            }}
+          >
+            Confirm
+          </NButton>
+        </div>
       </NPopover>
     );
   },

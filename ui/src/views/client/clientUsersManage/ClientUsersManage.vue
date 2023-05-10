@@ -46,6 +46,7 @@ import { DataTableInst, PaginationProps } from 'naive-ui';
 import { getClientUsers } from '../service';
 import AddUser from './AddUser.vue';
 import { Client2User, User } from '@prisma/client';
+import ClientView from '../ClientView.vue';
 
 const tableRef = ref<DataTableInst>();
 const addUserRef = ref();
@@ -55,6 +56,7 @@ const searchConfirm = ref('');
 const loading = ref(true);
 const show = ref(false);
 const clientId = ref('');
+const client = ref<ClientView>();
 
 const page = ref(1);
 const pageSize = ref(10);
@@ -67,7 +69,7 @@ const pagination = reactive<PaginationProps>({
     return `total: ${itemCount}`;
   },
 });
-const columns = useColumns(refresh, clientId);
+const columns = useColumns(refresh, clientId, client);
 function rowKey(rowData: { id: string }) {
   return rowData.id;
 }
@@ -113,10 +115,11 @@ watch(
 );
 
 defineExpose({
-  async open(id: string) {
-    clientId.value = id;
+  async open(clientId_: string, client_: ClientView) {
+    clientId.value = clientId_;
+    client.value = client_;
     show.value = true;
-    if (id) {
+    if (clientId_) {
       loading.value = true;
       try {
         await query();

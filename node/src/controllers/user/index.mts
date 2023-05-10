@@ -16,6 +16,8 @@ import { PrismaClient, User } from '@prisma/client';
 import {
   checkSystemAdmin,
   checkUserAuth,
+  checkUserAuthority,
+  getUserAuthority,
   SessionInfo,
 } from '../../service/index.mjs';
 import { sha256 } from '../../utils/encrypt.mjs';
@@ -35,9 +37,16 @@ export class UserController {
     @Body() @Required() @Required('password') user: User,
     @Session() session: SessionInfo
   ) {
+    await checkUserAuthority(session, 'userLimit', 1);
     user.password = sha256(user.password);
     user.isSystemAdmin = false;
     user.creatorId = session.tokenInfo.userId;
+    if (!user.email) {
+      user.email = null;
+    }
+    if (!user.phone) {
+      user.phone = null;
+    }
     return prismaClient.user.create({
       data: user,
       select: this.select,
@@ -55,6 +64,13 @@ export class UserController {
     }
     if (user.password) {
       user.password = sha256(user.password);
+    }
+
+    if (!user.email) {
+      user.email = null;
+    }
+    if (!user.phone) {
+      user.phone = null;
     }
     return prismaClient.user.update({
       where: {

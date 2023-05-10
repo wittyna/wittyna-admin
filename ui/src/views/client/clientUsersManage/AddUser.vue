@@ -98,7 +98,7 @@ async function addClientUser_() {
     show.value = false;
     emit('success');
   } finally {
-    commitLoading.value = true;
+    commitLoading.value = false;
   }
 }
 

@@ -69,7 +69,7 @@ const pagination = reactive<PaginationProps>({
 const columns = useColumns(
   refresh,
   (id) => createClientViewRef.value.open(id),
-  (id) => clientUsersManageRef.value.open(id)
+  (id, row) => clientUsersManageRef.value.open(id, row)
 );
 function rowKey(rowData: { id: string }) {
   return rowData.id;

@@ -9,6 +9,7 @@ export interface Client {
   createdAt?: string;
   updatedAt?: string;
   users?: User[];
+  userAuthorityDesc?: string;
 }
 
 export interface ClientView extends Client {

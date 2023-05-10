@@ -8,7 +8,7 @@ import { message } from '../../util';
 export const useColumns: (
   refresh: (flag: boolean) => void,
   onEdit: (id: string) => void,
-  onManageUser: (id: string) => void
+  onManageUser: (id: string, row: ClientView) => void
 ) => DataTableColumns<ClientView> = (refresh, onEdit, onManageUser) => {
   async function onDeleteHandler(id: string) {
     await deleteClient(id);
@@ -63,7 +63,7 @@ export const useColumns: (
             >
               Edit
             </NButton>
-            <NButton text type="info" onClick={() => onManageUser(row.id)}>
+            <NButton text type="info" onClick={() => onManageUser(row.id, row)}>
               Users
             </NButton>
             <NPopconfirm

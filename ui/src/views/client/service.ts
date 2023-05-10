@@ -91,3 +91,19 @@ export async function setClientUserExpiresAt({
     )}/expires-at/${encodeURIComponent(expiresAt)}`
   );
 }
+
+export async function setClientUserAuthority({
+  clientId,
+  userId,
+  authority,
+}: {
+  clientId: string;
+  userId: string;
+  authority: string;
+}): Promise<void> {
+  return request.put(
+    `/admin/client/${encodeURIComponent(clientId)}/user/${encodeURIComponent(
+      userId
+    )}/authority/${encodeURIComponent(authority || 'null')}`
+  );
+}
