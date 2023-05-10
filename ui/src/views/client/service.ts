@@ -26,7 +26,8 @@ export const getClient = (id: string): Promise<Client> =>
 export const deleteClient = (id: string): Promise<Client> =>
   request.delete(`/admin/client/${encodeURIComponent(id)}`);
 
-export const upsertClient = (client: Client): Promise<Client> => {
+export const upsertClient = (client_: Client): Promise<Client> => {
+  const client = { ...client_, creator: undefined };
   if (client.id) {
     return request.put(`/admin/client`, client);
   }

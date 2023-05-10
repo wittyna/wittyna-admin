@@ -1,6 +1,7 @@
 import { User } from '../user/type';
 
 export interface Client {
+  creator?: User;
   id?: string;
   desc: string;
   secret?: string;

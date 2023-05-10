@@ -108,7 +108,10 @@ function init(client?: Client) {
 
 <template>
   <NDrawer v-model:show="show" :width="502" @after-leave="() => init()">
-    <NDrawerContent title="Create client" closable>
+    <NDrawerContent
+      :title="model.id ? 'Edit client' : 'Create client'"
+      closable
+    >
       <NForm
         v-if="!loading"
         ref="formRef"
@@ -134,7 +137,7 @@ function init(client?: Client) {
           />
         </NFormItem>
         <NFormItem label="desc" path="desc">
-          <NInput v-model:value="model.desc" maxlength="256" />
+          <NInput v-model:value="model.desc" type="textarea" maxlength="256" />
         </NFormItem>
         <NFormItem label="type" path="type">
           <NSelect v-model:value="model.type" :options="typeOptions" />
@@ -144,6 +147,13 @@ function init(client?: Client) {
             :value="model.redirectUris.join(',')"
             maxlength="512"
             @update:value="model.redirectUris = $event.split(',')"
+          />
+        </NFormItem>
+        <NFormItem label="user authority desc" path="userAuthorityDesc">
+          <NInput
+            v-model:value="model.userAuthorityDesc"
+            type="textarea"
+            maxlength="256"
           />
         </NFormItem>
       </NForm>
