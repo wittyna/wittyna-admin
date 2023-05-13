@@ -14,7 +14,7 @@ import { ClientView } from '../type';
 export const useColumns: (
   refresh: (flag: boolean) => void,
   clientId: Ref<string>,
-  client: Ref<ClientView>
+  client: Ref<ClientView | undefined>
 ) => DataTableColumns<
   Omit<Client2User, 'expiresAt'> & { user: User; expiresAt: string }
 > = (refresh, clientId, client) => {
@@ -98,7 +98,6 @@ export const useColumns: (
       key: 'Authority',
       width: 150,
       render(row) {
-        console.log(client.value, 123);
         return (
           <>
             {row.authority}
@@ -113,7 +112,7 @@ export const useColumns: (
                 message.success('Update success');
                 row.authority = v;
               }}
-              placeholder={client.value.userAuthorityDesc || ''}
+              placeholder={client.value?.userAuthorityDesc || ''}
               defaultValue={row.authority || ''}
             ></ConfirmAuthority>
           </>

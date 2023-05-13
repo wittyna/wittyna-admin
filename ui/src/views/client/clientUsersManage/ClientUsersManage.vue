@@ -47,6 +47,7 @@ import { getClientUsers } from '../service';
 import AddUser from './AddUser.vue';
 import { Client2User, User } from '@prisma/client';
 import ClientView from '../ClientView.vue';
+import { ClientView as ClientView_ } from '../type';
 
 const tableRef = ref<DataTableInst>();
 const addUserRef = ref();
@@ -56,7 +57,7 @@ const searchConfirm = ref('');
 const loading = ref(true);
 const show = ref(false);
 const clientId = ref('');
-const client = ref<ClientView>();
+const client = ref<ClientView_>();
 
 const page = ref(1);
 const pageSize = ref(10);
@@ -115,7 +116,7 @@ watch(
 );
 
 defineExpose({
-  async open(clientId_: string, client_: ClientView) {
+  async open(clientId_: string, client_: ClientView_) {
     clientId.value = clientId_;
     client.value = client_;
     show.value = true;
