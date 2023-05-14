@@ -18,6 +18,18 @@ export const CONFIG = {
       ],
     },
     {
+      id: 'stock',
+      secret: '42ea9BE#',
+      desc: 'stock',
+      type: ClientType.OFFICIAL,
+      creatorId: 'baixiyang',
+      redirectUris: [
+        'https://stock.wittyna.com/stock/authorize',
+        // 用于ui界面调试。
+        'http://127.0.0.1:7777/stock/authorize',
+      ],
+    },
+    {
       id: 'tool-of-nana',
       secret: '42ea9BE#',
       desc: 'tool-of-nana',
@@ -61,6 +73,10 @@ export const CONFIG = {
     },
     {
       clientId: 'tool-of-nana',
+      userId: 'baixiyang',
+    },
+    {
+      clientId: 'stock',
       userId: 'baixiyang',
     },
     {
