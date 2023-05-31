@@ -27,6 +27,7 @@ export const CONFIG = {
         'https://stock.wittyna.com/stock/authorize',
         // 用于ui界面调试。
         'http://127.0.0.1:7777/stock/authorize',
+        'http://192.168.8.21:7777/stock/authorize',
       ],
     },
     {
