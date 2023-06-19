@@ -127,7 +127,6 @@ export class ClientController {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     type Where = Parameters<PrismaClient['client']['findMany']>[0]['where'];
-
     const where_: Where = isSystemAdmin
       ? {}
       : {
