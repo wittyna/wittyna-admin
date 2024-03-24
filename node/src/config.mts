@@ -7,7 +7,7 @@ export const CONFIG = {
   clients: [
     {
       id: 'admin',
-      secret: '42ea9BE#',
+      secret: '123456',
       desc: 'admin',
       type: ClientType.SYSTEM,
       userAuthorityDesc: `userLimit&clientLimit&clientUserLimit`,
@@ -19,7 +19,7 @@ export const CONFIG = {
     },
     {
       id: 'stock',
-      secret: '42ea9BE#',
+      secret: '123456',
       desc: 'stock',
       type: ClientType.OFFICIAL,
       creatorId: 'baixiyang',
@@ -31,8 +31,21 @@ export const CONFIG = {
       ],
     },
     {
+      id: 'carrot',
+      secret: '123456',
+      desc: 'carrot',
+      type: ClientType.OFFICIAL,
+      creatorId: 'baixiyang',
+      redirectUris: [
+        'https://stock.wittyna.com/carrot/authorize',
+        // 用于ui界面调试。
+        'http://127.0.0.1:8888/carrot/authorize',
+        'http://192.168.8.21:8888/carrot/authorize',
+      ],
+    },
+    {
       id: 'tool-of-nana',
-      secret: '42ea9BE#',
+      secret: '123456',
       desc: 'tool-of-nana',
       type: ClientType.OFFICIAL,
       creatorId: 'rona',
@@ -47,14 +60,14 @@ export const CONFIG = {
     {
       id: 'admin',
       username: 'admin',
-      password: sha256('42ea9BE#'),
+      password: sha256('123456'),
       isSystemAdmin: true,
     },
     {
       id: 'baixiyang',
       username: 'baixiyang',
       email: 'baixiyang@outlook.com',
-      password: sha256('42ea9BE#'),
+      password: sha256('123456'),
       isSystemAdmin: true,
     },
     {
@@ -81,11 +94,19 @@ export const CONFIG = {
       userId: 'baixiyang',
     },
     {
+      clientId: 'carrot',
+      userId: 'baixiyang',
+    },
+    {
       clientId: 'tool-of-nana',
       userId: 'rona',
     },
     {
       clientId: 'admin',
+      userId: 'rona',
+    },
+    {
+      clientId: 'carrot',
       userId: 'rona',
     },
   ],
